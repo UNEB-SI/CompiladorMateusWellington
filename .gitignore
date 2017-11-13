@@ -1,0 +1,26 @@
+### C ###
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Executables
+*.exe
+*.out
+
+#JetBrains
+.idea/
+cmake-build-debug/
+
+#Code-Blocks
+bin
+obj
+*.LAYOUT
+*.DEPEND
+
+# Lixo
+*~

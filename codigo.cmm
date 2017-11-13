@@ -1,0 +1,9 @@
+semretorno bundao (inteiro a) {}
+
+real cacetinho (real b) {}
+
+caracter galinha (semretorno) {
+    se (5 > 7) {
+        benjamin();
+    }
+}
