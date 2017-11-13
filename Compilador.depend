@@ -1,0 +1,33 @@
+# depslib dependency file v1.0
+1510584505 source:/home/acso/Desktop/CompiladorMateusWellington/main.c
+	<stdio.h>
+	<stdlib.h>
+	"include/erro.h"
+	"include/analisadorlexico.h"
+	"include/analisadorsintatico.h"
+
+1510584505 /home/acso/Desktop/CompiladorMateusWellington/include/erro.h
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+
+1510584505 /home/acso/Desktop/CompiladorMateusWellington/include/analisadorlexico.h
+	<stdio.h>
+	<ctype.h>
+	<stdlib.h>
+	<string.h>
+	"erro.h"
+
+1510584505 /home/acso/Desktop/CompiladorMateusWellington/include/analisadorsintatico.h
+	"analisadorlexico.h"
+	"erro.h"
+
+1510584505 source:/home/acso/Desktop/CompiladorMateusWellington/src/analisadorlexico.c
+	"../include/analisadorlexico.h"
+
+1510584505 source:/home/acso/Desktop/CompiladorMateusWellington/src/analisadorsintatico.c
+	"../include/analisadorsintatico.h"
+
+1510584505 source:/home/acso/Desktop/CompiladorMateusWellington/src/erro.c
+	"../include/erro.h"
+
