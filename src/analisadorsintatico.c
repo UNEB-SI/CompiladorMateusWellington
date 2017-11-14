@@ -7,19 +7,22 @@
 int analisadorSintatico() {
     tpos = 0;
     printf("\n\nTokens Lidos com Sucesso:\n");
+    imprimirToken(tpos);
     Prog();
-    //Cmd();
+    mostrarTabela();
     return 1;
 }
 
 int faltaToken() {
+    //printf("\n%d %d\n", tkpos, tpos);
     return tkpos != tpos;
 }
 
-int updateTPos() {
+int novoToken() {
     if (tkpos < tpos) erro(ERRO_INTERNO);
+    tpos++;
     imprimirToken(tpos);
-    return tpos++;
+    return tpos;
 }
 
 int ungetTPos() {
@@ -49,175 +52,98 @@ int reconhece(int categoria, int codigo) {
 /*Gramatica de Programa*/
 void Prog() {
     while (faltaToken()) {
-        ProgResto();
-    }
-}
-
-void ProgResto() {
-    if (reconhece(PR, PROTOTIPO)) {
-        updateTPos();
-        Prototipo();
-    } else if (reconhece(PR, SEMRETORNO)) {
-        Funcao();
-    } else if (Tipo()) {
-        updateTPos();
-        if (!reconheceID()) {
-            erro(AS_FALTAID);
+        if (reconhece(PR, PROTOTIPO)) {
+            novoToken();
+            if (Tipo() || reconhece(PR, SEMRETORNO)) {
+                novoToken();
+                if (!reconheceID()) erro(AS_FALTAID);
+                novoToken();
+                if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
+                novoToken();
+                TipoParamOpc();
+                printf("\n\n\n");
+                imprimirToken(tpos);
+                if (!reconhece(SN, FECHAPARENTESE)) erro(AS_FALTAPARENTESE);
+                novoToken();
+                while (1) {
+                    if (reconhece(SN, VIRGULA)) {
+                        novoToken();
+                        if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
+                        novoToken();
+                        TipoParamOpc();
+                        if (!reconhece(SN, FECHAPARENTESE)) erro(AS_FALTAPARENTESE);
+                        novoToken();
+                    } else break;
+                }
+                if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
+                novoToken();
+            } else erro(AS_ERRO);
+        } else if (reconhece(PR, SEMRETORNO)) {
+            novoToken();
+            if (!reconheceID()) erro(AS_FALTAID);
+            novoToken();
+            if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
+            Funcao();
+        } else if (Tipo()) {
+            tipo = tokens[tpos].codigo;
+            novoToken();
+            if (!reconheceID()) erro(AS_FALTAID);
+            taux = tokens[tpos];
+            novoToken();
+            if (reconhece(SN, ABREPARENTESES)) {
+                Funcao();
+            } else if (reconhece(SN, VIRGULA)) {
+                gerenciador(INSERIR, tipo, taux.lexema, 0, GLOBAL, taux.linha + 1);
+                while (reconhece(SN, VIRGULA)) {
+                    novoToken();
+                    if (!reconheceID()) erro(AS_FALTAID);
+                    gerenciador(INSERIR, tipo, tokens[tpos].lexema, 0, GLOBAL, tokens[tpos].linha + 1);
+                    novoToken();
+                }
+                if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
+                novoToken();
+            } else if (reconhece(SN, PONTOEVIRGULA)) {
+                novoToken();
+            } else {
+                erro(AS_FALTAPONTOEVIRGULA);
+            }
         }
-        updateTPos();
-        ProgRestoSobra();
-    } else {
-        updateTPos();
-        //imprimirToken();
-        /*if (!reconhece(SN, FECHACHAVES)) {
-            imprimirToken();
-            logErro(AS_ERRO, 0, tokens[tpos].linha);
-        }*/
     }
-}
-
-void ProgRestoSobra() {
-    if (reconhece(SN, ABREPARENTESES)) {
-        ungetTPos(); ungetTPos();
-        Funcao();
-    } else if (reconhece(SN, VIRGULA)) {
-        updateTPos();
-        Decl();
-    } else if (reconhece(SN, PONTOEVIRGULA)) {
-        updateTPos();
-    } else {
-        erro(AS_FALTAPONTOEVIRGULA);
-    }
-}
-
-void Decl() {
-    updateTPos();
-    if (reconhece(SN, VIRGULA)) {
-        updateTPos();
-        reconheceID();
-        Decl();
-    } else ;
-    if (!reconhece(SN, PONTOEVIRGULA)) {
-        erro(AS_FALTAPONTOEVIRGULA);
-    }
-}
-
-void Prototipo() {
-    if (Tipo()) {
-        updateTPos();
-        PrototipoDecl();
-    } else if (reconhece(PR, SEMRETORNO)) {
-        updateTPos();
-        PrototipoDecl();
-    } else {
-        erro(AS_ERRO);
-    }
-}
-
-void PrototipoDecl() {
-
-    if (!reconheceID()) {
-        erro(AS_FALTAID);
-    }
-    updateTPos();
-    if (!reconhece(SN, ABREPARENTESES)) {
-        erro(AS_FALTAPARENTESE);
-    }
-    updateTPos();
-    TipoParamOpc();
-    updateTPos();
-    if (!reconhece(SN, FECHAPARENTESE)) {
-        erro(AS_FALTAPARENTESE);
-    }
-    updateTPos();
-    ProtitipoResto();
-    updateTPos();
-    if (!reconhece(SN, PONTOEVIRGULA)) {
-        erro(AS_FALTAPONTOEVIRGULA);
-    }
-    updateTPos();
-}
-
-void ProtitipoResto() {
-    if (reconhece(SN, VIRGULA)) {
-        updateTPos();
-        if (!reconheceID()) {
-            erro(AS_FALTAID);
-        }
-        updateTPos();
-        if (!reconhece(SN, ABREPARENTESES)) {
-            erro(AS_FALTAPARENTESE);
-        }
-        updateTPos();
-        TipoParamOpc();
-        updateTPos();
-        if (!reconhece(SN, FECHAPARENTESE)) {
-            erro(AS_FALTAPARENTESE);
-        }
-        updateTPos();
-        ProtitipoResto();
-    } else ungetTPos();
 }
 
 void Funcao() {
-    if (reconhece(PR, SEMRETORNO)) {
-        printf("\n-INI FUN-\n");
-        updateTPos();
-        FuncaoDecl();
-        printf("\n-FIM FUN-\n");
-    } else if (Tipo()){
-        printf("\n-INI FUN-\n");
-        updateTPos();
-        FuncaoDecl();
-        printf("\n-FIM FUN-\n");
-    }
-}
-
-void FuncaoDecl() {
-    if (!reconheceID()) {
-        erro(AS_FALTAID);
-    }
-    updateTPos();
-    if (!reconhece(SN, ABREPARENTESES)) {
-        erro(AS_FALTAPARENTESE);
-    }
-    updateTPos();
+    novoToken();
     TipoParam();
-    updateTPos();
-    if (!reconhece(SN, FECHAPARENTESE)) {
-        erro(AS_FALTAPARENTESE);
+    novoToken();
+    if (!reconhece(SN, FECHAPARENTESE)) erro(AS_FALTAPARENTESE);
+    novoToken();
+    if (!reconhece(SN, ABRECHAVES)) erro(AS_FALTACHAVES);
+    novoToken();
+    while(1) {
+        if (Tipo()) {
+            novoToken();
+            if (!reconheceID()) erro(AS_FALTAID);
+            novoToken();
+            while (1) {
+                if (reconhece(SN, VIRGULA)) {
+                    novoToken();
+                    if (!reconheceID()) erro(AS_FALTAID);
+                    novoToken();
+                } else break;
+            }
+            if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
+            novoToken();
+        } else break;
     }
-    updateTPos();
-    if (!reconhece(SN, ABRECHAVES)) {
-        erro(AS_FALTACHAVES);
-    }
-    updateTPos();
-    NovaDecl();
-    updateTPos();
-    Cmd();
-    //updateTPos();
-    if (!reconhece(SN, FECHACHAVES)) {
-        //Cmd();
-        NovoComando();
-        if (!faltaToken()) erro(AS_FALTACHAVES);
-    }
-    updateTPos();
-}
 
-void NovaDecl() {
-    if (Tipo()) {
-        updateTPos();
-        if (!reconheceID()) {
-            erro(AS_FALTAID);
-        }
-        Decl();
-        updateTPos();
-        NovaDecl();
-        if (!reconhece(SN, PONTOEVIRGULA)) {
-            ungetTPos();
-            erro(AS_FALTAPONTOEVIRGULA);
-        }
-    } else ungetTPos();
+    while (1) {
+        if (!reconhece(SN, FECHACHAVES)) {
+            Cmd();
+            novoToken();
+        } else break;
+    }
+    if (!reconhece(SN, FECHACHAVES)) erro(AS_FALTACHAVES);
+    novoToken();
 }
 
 /*Gramatica de Tipo*/
@@ -226,8 +152,8 @@ int Tipo() {
             (tokens[tpos].codigo != INTEIRO &&
                     tokens[tpos].codigo != REAL &&
                     tokens[tpos].codigo != CARACTER &&
-                    tokens[tpos].codigo != CADEIA &&
-                    tokens[tpos].codigo != BOOLEANO)) {
+                    tokens[tpos].codigo != BOOLEANO))
+    {
         return 0;
     }
     return 1;
@@ -237,33 +163,37 @@ int Tipo() {
 void TipoParam() {
     if (reconhece(PR, SEMPARAM)) {
     } else if (Tipo()) {
-        updateTPos();
-        if (!reconheceID()) {
-            erro(ERRO_INTERNO);
-        }
-        TipoParamResto();
-    }
-}
-
-void TipoParamResto() {
-    if (reconhece(SN, VIRGULA)) {
-        updateTPos();
-        if (Tipo()) {
-            updateTPos();
-            if (!reconheceID()) {
-                erro(ERRO_INTERNO);
+        novoToken();
+        if (!reconheceID()) erro(ERRO_INTERNO);
+        novoToken();
+        while (1) {
+            if (reconhece(SN, VIRGULA)) {
+                novoToken();
+                if (!Tipo()) erro(ERRO_INTERNO);
+                novoToken();
+                if (!reconheceID()) erro(ERRO_INTERNO);
+            } else {
+                ungetTPos();
+                break;
             }
-            updateTPos();
-            TipoParamResto();
         }
-    } else ;
+    }
 }
 
 /*Gramatica de TipoParamOpc*/
 void TipoParamOpc() {
-    if (reconhece(PR, SEMPARAM)) {}
-    else {
-        TipoParamOpcResto();
+    if (reconhece(PR, SEMPARAM)) {
+    } else if (Tipo()) {
+        novoToken();
+        if (reconheceID()) novoToken();
+        while (1) {
+            if (reconhece(SN, VIRGULA)) {
+                novoToken();
+                if (!Tipo()) erro(ERRO_INTERNO);
+                novoToken();
+                if (reconheceID()) novoToken();
+            } else break;
+        }
     }
 }
 
@@ -271,10 +201,10 @@ void TipoParamOpcResto() {
     if (!Tipo()) {
         erro(AS_ERRO);
     }
-    updateTPos();
+    novoToken();
     IdResto();
     if (reconhece(SN, VIRGULA)) {
-        updateTPos();
+        novoToken();
         TipoParamOpcResto();
     } else ungetTPos();
 }
@@ -286,30 +216,30 @@ void IdResto() {
 /*Gramatica de Comandos*/
 void Cmd() {
     if (reconhece(PR, SE)) {
-        updateTPos();
+        novoToken();
         Se();
     } else if (reconhece(PR, ENQUANTO)) {
-        updateTPos();
+        novoToken();
         Enquanto();
     } else if (reconhece(PR, PARA)) {
-        updateTPos();
+        novoToken();
         Para();
     } else if (reconhece(PR, RETORNE)) {
-        updateTPos();
+        novoToken();
         Retorne();
     } else if (Atrib()) {
         if (!reconhece(SN, PONTOEVIRGULA)) {
             erro(AS_COMANDO);
         }
     } else if (reconheceID()) {
-        updateTPos();
+        novoToken();
         NId();
     } else if (reconhece(SN, ABRECHAVES)) {
         NovoComando();
     } else if (reconhece(SN, PONTOEVIRGULA)) {
-        updateTPos();
+        novoToken();
     } else {
-        /*updateTPos();
+        /*novoToken();
         imprimirToken();
         if (!reconhece(SN, FECHACHAVES)) {
             ungetTPos();
@@ -321,20 +251,20 @@ void Cmd() {
 void Se() {
     if (reconhece(SN, ABREPARENTESES)) {
         printf("\n-INI  SE-\n");
-        updateTPos();
+        novoToken();
         Expr();
-        updateTPos();
+        novoToken();
         if (!reconhece(SN, FECHAPARENTESE)) {
             erro(AS_SE);
         }
-        updateTPos();
+        novoToken();
         //while (!reconhece(SN, FECHACHAVES)) {
             Cmd();
         //}
-        updateTPos();
+        novoToken();
         printf("\n-FIM  SE-\n");
         Senao();
-        updateTPos();
+        novoToken();
     } else {
         Senao();
     }
@@ -344,7 +274,7 @@ void Senao() {
     imprimirToken(tpos);
     if (reconhece(PR, SENAO)) {
         printf("\n-INI SEN-\n");
-        updateTPos();
+        novoToken();
         Cmd();
         printf("\n-FIM SEN-\n");
     } else ;
@@ -352,11 +282,11 @@ void Senao() {
 
 void Enquanto() {
     if (reconhece(SN, ABREPARENTESES)) {
-        updateTPos();
+        novoToken();
         Expre();
-        updateTPos();
+        novoToken();
         if (reconhece(SN, FECHAPARENTESE)) {
-            updateTPos();
+            novoToken();
             Cmd();
         } else {
             erro(AS_ENQUANTO);
@@ -367,18 +297,18 @@ void Enquanto() {
 void Para() {
     if (reconhece(SN, ABREPARENTESES)) {
         printf("\n-INI PAR-\n");
-        updateTPos();
+        novoToken();
         if (!Atrib()) erro(AS_PARA);
         if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_PARA);
-        updateTPos();
+        novoToken();
         imprimirToken(tpos);
         Expr();
-        updateTPos();
+        novoToken();
         if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_PARA);
-        updateTPos();
+        novoToken();
         if (!Atrib()) erro(AS_PARA);
         if (reconhece(SN, FECHAPARENTESE)) {
-            updateTPos();
+            novoToken();
             Cmd();
             printf("\n-FIM PAR-\n");
         } else erro(AS_PARA);
@@ -388,10 +318,10 @@ void Para() {
 void Retorne() {
     if (!reconhece(SN, PONTOEVIRGULA)) {
         printf("\n-INI RET-\n");
-        //updateTPos();
+        //novoToken();
         imprimirToken(tpos);
         Expr();
-        updateTPos();
+        novoToken();
         if (!reconhece(SN, PONTOEVIRGULA)) {
             erro(AS_FALTAPONTOEVIRGULA);
         }
@@ -402,17 +332,16 @@ void Retorne() {
 void NId() {
     if (reconhece(SN, ABREPARENTESES)) {
         printf("\n-INI NID-\n");
-        updateTPos();
+        novoToken();
         Conteudo();
-        updateTPos();
+        novoToken();
         if (!reconhece(SN, FECHAPARENTESE)) {
             erro(AS_ERRO);
         }
-        updateTPos();
+        novoToken();
         if (!reconhece(SN, PONTOEVIRGULA)) {
             erro(AS_ERRO);
         }
-        updateTPos();
         printf("\n-FIM NID-\n");
     } else {
         erro(AS_ERRO);
@@ -421,7 +350,7 @@ void NId() {
 
 void Conteudo() {
     if (!reconhece(SN, FECHAPARENTESE)) {
-        updateTPos();
+        novoToken();
         Expr();
         ConteudoResto();
     } else ungetTPos();
@@ -429,30 +358,31 @@ void Conteudo() {
 
 void ConteudoResto() {
     if (reconhece(SN, VIRGULA)) {
-        updateTPos();
+        novoToken();
         Expr();
         ConteudoResto();
     } else ;
 }
 
 void NovoComando() {
-    //updateTPos();
+    //novoToken();
     if (reconhece(SN, ABRECHAVES)) {
-        updateTPos();
-        if (!reconhece(SN, FECHACHAVES)) {
+        novoToken();
+        while (!reconhece(SN, FECHACHAVES)) {
             Cmd();
+            novoToken();
         }
-    } else ;
+    } else Cmd();
 }
 
 /*Gramatica de Atribuição*/
 int Atrib() {
     if (tokens[tpos].categoria == ID) {
         printf("\n-INI ATR\n");
-        updateTPos();
+        novoToken();
         if (tokens[tpos].categoria == SN &&
             tokens[tpos].codigo == ATRIBUICAO) {
-            updateTPos();
+            novoToken();
             Expre();
             printf("\n-FIM ATR\n");
             return 1;
@@ -468,14 +398,14 @@ int Atrib() {
 void Expr() {
     printf("\n-INI EXP-\n");
     Expre();
-    //updateTPos(); /*TODO AINDA PODE GERAR ERRO EM PARENTESES*/
+    //novoToken(); /*TODO AINDA PODE GERAR ERRO EM PARENTESES*/
     TermoExpr();
     printf("\n-FIM EXP-\n");
 }
 
 void TermoExpr() {
     if (OpRel()) {
-        updateTPos();
+        novoToken();
         RestoExpr();
     }
     ungetTPos();
@@ -498,7 +428,7 @@ void Termo() {
 
 void Resto() {
     if (reconhece(SN, ADICAO) || reconhece(SN, SUBTRACAO) || reconhece(SN, OR)) {
-        updateTPos();
+        novoToken();
         Termo();
         Resto();
     } else ;
@@ -506,7 +436,7 @@ void Resto() {
 
 void Sobra() {
     if (reconhece(SN, MULTIPLICACAO) || reconhece(SN, DIVISAO) || reconhece(SN, AND)) {
-        updateTPos();
+        novoToken();
         Termo();
         Resto();
     } else ;
@@ -514,18 +444,18 @@ void Sobra() {
 
 void Fator() {
     if (reconhece(SN, ABREPARENTESES)) {
-        updateTPos();
+        novoToken();
         Expr();
-        updateTPos();
+        novoToken();
         if (!reconhece(SN, FECHAPARENTESE)) {
             erro(AS_FALTAPARENTESE);
         }
-        updateTPos();
+        novoToken();
     } else if (tokens[tpos].categoria == ID ||
                 tokens[tpos].categoria == INTCON ||
                 tokens[tpos].categoria == REALCON ||
                 tokens[tpos].categoria == CT_C) {
-        updateTPos();
+        novoToken();
     }
     else {
         //imprimirToken();
@@ -541,9 +471,9 @@ int OpRel() {
                     tokens[tpos].codigo == MENORIGUAL || tokens[tpos].codigo == MENOR ||
                     tokens[tpos].codigo == MAIORIGUAL || tokens[tpos].codigo == MAIOR))
     {
-        //updateTPos();
+        //novoToken();
         return 1;
     }
-    //updateTPos();
+    //novoToken();
     return 0;
 }

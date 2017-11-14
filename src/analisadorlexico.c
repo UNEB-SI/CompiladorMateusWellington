@@ -496,7 +496,7 @@ void criarToken(int categoria, char* valor, int codigo) {
             tk.codigo = codigo;
             break;
         case CT_L:
-            tk.codigo = codigo;
+            strcpy(tk.lexema, valor);
             break;
         default:
             break;
@@ -537,7 +537,7 @@ void imprimirToken(int tpos) {
             printf("<CT_C / %s>\n", tokens[tpos].lexema);
             break;
         case CT_L:
-            printf("<CT_L / %s>\n", literal[tokens[tpos].codigo]);
+            printf("<CT_L / %s>\n", tokens[tpos].lexema);
             break;
         default:
             printf("<%d / val = %s>\n", tokens[tpos].categoria, tokens[tpos].lexema);

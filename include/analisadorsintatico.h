@@ -6,60 +6,45 @@
 #define COMPILADOR_ANALISADORSINTATICO_H
 
 #include "analisadorlexico.h"
+#include "gerenciador.h"
 #include "erro.h"
 
-extern Token t;
 extern Token *tokens;
 extern int tkpos;
 int tpos;
+int tipo;
+Token taux;
 
 int analisadorSintatico();
 
-int updateTPos();
-int ungetTPos();
-int erro(int erro);
-
 /*Gramatica de Programa*/
 /*
- * Prog → ProgResto | ε
- * ProgResto → Prototipo | Tipo Id ProgRestoSobra
- * ProgRestoSobra → VIRGULA Decl | ABREPARENTESES Funcao | PONTOEVIRGULA
- * Decl → VIRGULA Id | ε
- * Prototipo → Tipo PrototipoDecl | SEMRETORNO PrototipoDecl
- *   PrototipoDecl → Id ABREPARENTESES TipoParamOpc FECHAPARENTESES ProtitipoResto PONTOEVIRGULA
- *   ProtitipoResto → VIRGULA Id ABREPARENTESES TipoParamOpc FECHAPARENTESES ProtitipoResto | ε
- * Funcao → Tipo FuncaoDeclTipo | SEMRETORNO FuncaoDecl
- *   FuncaoDecl → Id ABREPARENTESES TipoParam FECHAPARENTESES
- *                  ABRECHAVES NovaDecl NovoCmd FECHACHAVES
- *   NovaDecl → Decl | ε
- *   NovoCmd → Cmd | ε
+ * Prog → {
+ *      Tipo Id { VIRGULA Id } PONTOEVIRGULA |
+ *      Prototipo Tipo       Id ABREPARENTESES TipoParamOpc FECHAPARENTESES { VIRGULA Id ABRECHAVES TipoParamOpc FECHAPARENTESES } PONTOEVIRGULA |
+ *      Prototipo SEMRETORNO Id ABREPARENTESES TipoParamOpc FECHAPARENTESES { VIRGULA Id ABRECHAVES TipoParamOpc FECHAPARENTESES } PONTOEVIRGULA |
+ *      Tipo Id ABREPARENTESES Funcao |
+ *      SEMRETORNO Id ABREPARENTESES Funcao
+ *      }
+ * Funcao → TipoParam FECHAPARENTESES ABRECHAVES { Tipo Id { VIRGULA Id } PONTOEVIRGULA } { Cmd } FECHACHAVES
  */
 
 void Prog();
-void ProgResto();
-void ProgRestoSobra();
-void Decl();
-void Prototipo();
-void PrototipoDecl();
-void ProtitipoResto();
 void Funcao();
-void FuncaoDecl();
-void NovaDecl();
+
 /*Gramatica de Tipo*/
 /*
- * Tipo → caracter | cadeia | inteiro | real | booleano
+ * Tipo → caracter | inteiro | real | booleano
  */
 
 int Tipo();
 
 /*Gramatica de TipoParam*/
 /*
- * TipoParam → semparam | Tipo Id TipoParamResto
- * TipoParamResto → ',' Tipo Id TipoParamResto | ε
+ * TipoParam → semparam | Tipo Id {VIRGULA Tipo Id}
  */
 
 void TipoParam();
-void TipoParamResto();
 
 /*Gramatica de TipoParamOpc*/
 /*
@@ -137,5 +122,9 @@ void Fator();
  */
 
 int OpRel();
+
+int novoToken();
+int ungetTPos();
+int erro(int erro);
 
 #endif //COMPILADOR_ANALISADORSINTATICO_H

@@ -1,21 +1,9 @@
-prototipo inteiro fibonacci(inteiro);
+real b, c;
 
-semretorno principal(semparam) {
+prototipo inteiro fibonacci(inteiro a), (real b, caracter);
+prototipo semretorno teste(caracter x), (real b, caracter);
 
-     inteiro i, n;
-
-     imprima("Digite a qtd de termos da sequencia: ");
-     leia(n);
-     imprima("A sequencia de Fibonacci solicitada eh: ");
-     imprima(enter);
-     para (i=0; i<n; i=i+1) {
-            imprima(fibonacci(i+1));
-            }
-      retorne;
+semretorno fun (semparam) {
+    caracter c;
+    real i, d;
 }
-
-inteiro fibbonaci(inteiro num) {
-
-      se ((num==1) || (num==2)) retorne 1;
-      senao
-             retorne (fibonacci*(num-1)+fibonacci*(num-2));

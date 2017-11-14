@@ -1,26 +1,29 @@
 #ifndef GERENCIADOR_H_INCLUDED
 #define GERENCIADOR_H_INCLUDED
 
+#include "analisadorlexico.h"
+#include "analisadorsintatico.h"
+
 #define GLOBAL -1
 #define LOCAL -2
 #define PARAM -5
-#include "sintatico.h"
+#define DIM 100
 
-typedef struct t{
+typedef struct tabela {
         char lexema[DIM];
         int zombie;
         int tipo;
         int escopo;
         int linha;
-}CelulaTabela;
+} CelulaTabela;
 
 enum{INSERIR = -10, IGNORE = -11, EXCLUIR = -12, CONSULTAR = -13} operacao;
 
 CelulaTabela tabela[DIM];
 int topo;
 
-void gerenciador(int operacao, int tipo, int zombie, int classe);
-void inserir(int tipo, int zombie, int classe);
+void gerenciador(int operacao, int tipo, char lexema[], int zombie, int escopo, int linha);
+void inserir(int tipo, char* lexema, int zombie, int escopo, int linha);
 void excluir();
 void mostrarTabela();
 
