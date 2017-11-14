@@ -1,13 +1,21 @@
-semretorno bundao (inteiro a) {
-    inteiro b, j;
-    se (a > b) {
-        i = 0;
-        se (a > b) {
-                i = 0;
-            }
-    }
+prototipo inteiro fibonacci(inteiro);
 
+semretorno principal(semparam) {
+
+     inteiro i, n;
+
+     imprima("Digite a qtd de termos da sequencia: ");
+     leia(n);
+     imprima("A sequencia de Fibonacci solicitada eh: ");
+     imprima(enter);
+     para (i=0; i<n; i=i+1) {
+            imprima(fibonacci(i+1));
+            }
+      retorne;
 }
 
-prototipo inteiro benjamin (inteiro b, caracter a), aa (inteiro b);
-prototipo semretorno benjamin (inteiro b, caracter a), q(semparam);
+inteiro fibbonaci(inteiro num) {
+
+      se ((num==1) || (num==2)) retorne 1;
+      senao
+             retorne (fibonacci*(num-1)+fibonacci*(num-2));

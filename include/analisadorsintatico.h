@@ -8,6 +8,7 @@
 #include "analisadorlexico.h"
 #include "erro.h"
 
+extern Token t;
 extern Token *tokens;
 extern int tkpos;
 int tpos;
@@ -16,7 +17,7 @@ int analisadorSintatico();
 
 int updateTPos();
 int ungetTPos();
-void imprimirToken();
+int erro(int erro);
 
 /*Gramatica de Programa*/
 /*
@@ -119,8 +120,9 @@ void RestoExpr();
 /*
  * Expre → Termo Resto
  * Termo → Fator Sobra
- * Resto → ‘ +‘ Termo Resto | ‘ –‘ Termo Resto | ‘ OR‘ Termo Resto ε
- * Sobra → ‘ *‘ Fator Sobra | ‘ /‘ Fator Sobra | ‘ AND‘ Fator Sobra ε
+ * Resto → ‘ +‘ Termo Resto | ‘ –‘ Termo Resto | ‘ OR‘ Termo Resto | ε
+ * RestoTerm →
+ * Sobra → ‘ *‘ Fator Sobra | ‘ /‘ Fator Sobra | ‘ AND‘ Fator Sobra | ε
  * Fator → Id | Id ‘(‘ Expr ‘)‘ | ‘(‘ Expr ‘)‘ | num |  intcon | realcon | caraccon | '!' Fator
  */
 void Expre(); //Simples

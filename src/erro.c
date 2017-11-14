@@ -27,8 +27,3 @@ void logErro(int erro, int num, ...) {
     va_end(list);
     exit(0);
 }
-
-void erro(int erro) {
-    printf(Erro[erro]);
-    exit(0);
-}

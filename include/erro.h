@@ -23,7 +23,6 @@ enum Erro {ABRIR_ARQUIVO,
     AS_FALTAPONTOEVIRGULA,
     AS_FALTAEXPREOUNUM};
 
-void erro(int erro);
 void logErro(int erro, int num, ...);
 
 #endif //COMPILADOR_ERRO_H
