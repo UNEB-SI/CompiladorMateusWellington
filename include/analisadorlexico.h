@@ -20,6 +20,7 @@ struct tk_struct {
         int codigo;
         char lexema[SIZE];
     };
+    int linha;
 };
 
 typedef struct tk_struct Token;

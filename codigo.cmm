@@ -1,9 +1,13 @@
-semretorno bundao (inteiro a) {}
-
-real cacetinho (real b) {}
-
-caracter galinha (semretorno) {
-    se (5 > 7) {
-        benjamin();
+semretorno bundao (inteiro a) {
+    inteiro b, j;
+    se (a > b) {
+        i = 0;
+        se (a > b) {
+                i = 0;
+            }
     }
+
 }
+
+prototipo inteiro benjamin (inteiro b, caracter a), aa (inteiro b);
+prototipo semretorno benjamin (inteiro b, caracter a), q(semparam);

@@ -473,7 +473,7 @@ void analisePRouID(char valor[]) {
     int resultado = -1;
     char teste[SIZE];
     strcpy(teste, valor);
-    for (i = 0; i < PR_TAM - 1; i++) {
+    for (i = 0; i < PR_TAM; i++) {
         if (strcmp(Pr[i], valor) == 0) {
             resultado = i;
         }
@@ -505,6 +505,7 @@ void analisePRouID(char valor[]) {
 void criarToken(int categoria, char* valor, int codigo) {
     Token tk;
     tk.categoria = categoria;
+    tk.linha = linha;
     switch (categoria) {
         case INTCON:
         case REALCON:

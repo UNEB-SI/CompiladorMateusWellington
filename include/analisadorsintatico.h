@@ -15,7 +15,7 @@ int tpos;
 int analisadorSintatico();
 
 int updateTPos();
-void ungetTPos();
+int ungetTPos();
 void imprimirToken();
 
 /*Gramatica de Programa*/
@@ -62,8 +62,8 @@ void TipoParamResto();
 
 /*Gramatica de TipoParamOpc*/
 /*
- * TipoParamOpc → semparam | Tipo IdResto TipoParamOpcResto
- * TipoParamOpcResto → ',' Tipo IdResto TipoParamOpcResto | ε
+ * TipoParamOpc → semparam | TipoParamOpcResto
+ * TipoParamOpcResto → Tipo IdResto ',' TipoParamOpcResto | ε
  * IdResto → Id | ε
  */
 
@@ -121,7 +121,7 @@ void RestoExpr();
  * Termo → Fator Sobra
  * Resto → ‘ +‘ Termo Resto | ‘ –‘ Termo Resto | ‘ OR‘ Termo Resto ε
  * Sobra → ‘ *‘ Fator Sobra | ‘ /‘ Fator Sobra | ‘ AND‘ Fator Sobra ε
- * Fator → Id ‘(‘ Expr ‘)‘ | ‘(‘ Expr ‘)‘ | num |  intcon | realcon | caraccon | '!' Fator
+ * Fator → Id | Id ‘(‘ Expr ‘)‘ | ‘(‘ Expr ‘)‘ | num |  intcon | realcon | caraccon | '!' Fator
  */
 void Expre(); //Simples
 void Termo();
