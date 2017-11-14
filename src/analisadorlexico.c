@@ -146,9 +146,8 @@ int analisadorLexico(FILE *file) {
                 break;
             case 12:
                 c = (char) getc(file);
-                while (islower(c) || isupper(c) ||
-                       isdigit(c) || c == '_' ||
-                       c == ' ' || c == '\n') {
+                while (isalpha(c) || c == '_' ||
+                       c == ' ' || c == '\n' || c == ':') {
                     strcat(caux, &c);
                     c = (char) getc(file);
                 }
@@ -438,32 +437,7 @@ int analisadorLexico(FILE *file) {
     }
     printf("\n\nTokens Gerados:\n");
     for (tk_pos = 0; tk_pos < tkpos; tk_pos++) {
-        switch (tokens[tk_pos].categoria) {
-            case INTCON:
-                printf("<INTCON / %s>\n", tokens[tk_pos].lexema);
-                break;
-            case REALCON:
-                printf("<REALCON / %s>\n", tokens[tk_pos].lexema);
-                break;
-            case ID:
-                printf("<ID / %s>\n", ids[tokens[tk_pos].codigo]);
-                break;
-            case PR:
-                printf("<PR / %s>\n", Pr[tokens[tk_pos].codigo]);
-                break;
-            case SN:
-                printf("<SN / %s>\n", Sn[tokens[tk_pos].codigo]);
-                break;
-            case CT_C:
-                printf("<CT_C / %s>\n", tokens[tk_pos].lexema);
-                break;
-            case CT_L:
-                printf("<CT_L / %s>\n", literal[tokens[tk_pos].codigo]);
-                break;
-            default:
-                printf("<%d / val = %s>\n", tokens[tk_pos].categoria, tokens[tk_pos].lexema);
-                break;
-        }
+        imprimirToken(tk_pos);
     }
     return 1;
 }
@@ -473,7 +447,7 @@ void analisePRouID(char valor[]) {
     int resultado = -1;
     char teste[SIZE];
     strcpy(teste, valor);
-    for (i = 0; i < PR_TAM - 1; i++) {
+    for (i = 0; i < PR_TAM; i++) {
         if (strcmp(Pr[i], valor) == 0) {
             resultado = i;
         }
@@ -505,6 +479,7 @@ void analisePRouID(char valor[]) {
 void criarToken(int categoria, char* valor, int codigo) {
     Token tk;
     tk.categoria = categoria;
+    tk.linha = linha;
     switch (categoria) {
         case INTCON:
         case REALCON:
@@ -539,4 +514,33 @@ void armazenarToken(Token tk) {
 
     tokens[tkpos] = tk;
     tkpos++;
+}
+
+void imprimirToken(int tpos) {
+    switch (tokens[tpos].categoria) {
+        case INTCON:
+            printf("<INTCON / %s>\n", tokens[tpos].lexema);
+            break;
+        case REALCON:
+            printf("<REALCON / %s>\n", tokens[tpos].lexema);
+            break;
+        case ID:
+            printf("<ID / %s>\n", ids[tokens[tpos].codigo]);
+            break;
+        case PR:
+            printf("<PR / %s>\n", Pr[tokens[tpos].codigo]);
+            break;
+        case SN:
+            printf("<SN / %s>\n", Sn[tokens[tpos].codigo]);
+            break;
+        case CT_C:
+            printf("<CT_C / %s>\n", tokens[tpos].lexema);
+            break;
+        case CT_L:
+            printf("<CT_L / %s>\n", literal[tokens[tpos].codigo]);
+            break;
+        default:
+            printf("<%d / val = %s>\n", tokens[tpos].categoria, tokens[tpos].lexema);
+            break;
+    }
 }

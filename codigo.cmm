@@ -1,9 +1,21 @@
-semretorno bundao (inteiro a) {}
+prototipo inteiro fibonacci(inteiro);
 
-real cacetinho (real b) {}
+semretorno principal(semparam) {
 
-caracter galinha (semretorno) {
-    se (5 > 7) {
-        benjamin();
-    }
+     inteiro i, n;
+
+     imprima("Digite a qtd de termos da sequencia: ");
+     leia(n);
+     imprima("A sequencia de Fibonacci solicitada eh: ");
+     imprima(enter);
+     para (i=0; i<n; i=i+1) {
+            imprima(fibonacci(i+1));
+            }
+      retorne;
 }
+
+inteiro fibbonaci(inteiro num) {
+
+      se ((num==1) || (num==2)) retorne 1;
+      senao
+             retorne (fibonacci*(num-1)+fibonacci*(num-2));

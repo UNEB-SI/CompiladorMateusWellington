@@ -20,6 +20,7 @@ struct tk_struct {
         int codigo;
         char lexema[SIZE];
     };
+    int linha;
 };
 
 typedef struct tk_struct Token;
@@ -42,5 +43,7 @@ int analisadorLexico(FILE *file);
 void analisePRouID(char valor[]);
 void criarToken(int categoria, char* valor, int codigo);
 void armazenarToken(Token tk);
+void imprimirToken(int tpos);
+void Analex();
 
 #endif //COMPILADOR_ANALISADORLEXICO_H

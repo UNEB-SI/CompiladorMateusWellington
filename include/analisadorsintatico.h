@@ -8,6 +8,7 @@
 #include "analisadorlexico.h"
 #include "erro.h"
 
+extern Token t;
 extern Token *tokens;
 extern int tkpos;
 int tpos;
@@ -15,8 +16,8 @@ int tpos;
 int analisadorSintatico();
 
 int updateTPos();
-void ungetTPos();
-void imprimirToken();
+int ungetTPos();
+int erro(int erro);
 
 /*Gramatica de Programa*/
 /*
@@ -62,8 +63,8 @@ void TipoParamResto();
 
 /*Gramatica de TipoParamOpc*/
 /*
- * TipoParamOpc → semparam | Tipo IdResto TipoParamOpcResto
- * TipoParamOpcResto → ',' Tipo IdResto TipoParamOpcResto | ε
+ * TipoParamOpc → semparam | TipoParamOpcResto
+ * TipoParamOpcResto → Tipo IdResto ',' TipoParamOpcResto | ε
  * IdResto → Id | ε
  */
 
@@ -119,9 +120,10 @@ void RestoExpr();
 /*
  * Expre → Termo Resto
  * Termo → Fator Sobra
- * Resto → ‘ +‘ Termo Resto | ‘ –‘ Termo Resto | ‘ OR‘ Termo Resto ε
- * Sobra → ‘ *‘ Fator Sobra | ‘ /‘ Fator Sobra | ‘ AND‘ Fator Sobra ε
- * Fator → Id ‘(‘ Expr ‘)‘ | ‘(‘ Expr ‘)‘ | num |  intcon | realcon | caraccon | '!' Fator
+ * Resto → ‘ +‘ Termo Resto | ‘ –‘ Termo Resto | ‘ OR‘ Termo Resto | ε
+ * RestoTerm →
+ * Sobra → ‘ *‘ Fator Sobra | ‘ /‘ Fator Sobra | ‘ AND‘ Fator Sobra | ε
+ * Fator → Id | Id ‘(‘ Expr ‘)‘ | ‘(‘ Expr ‘)‘ | num |  intcon | realcon | caraccon | '!' Fator
  */
 void Expre(); //Simples
 void Termo();
