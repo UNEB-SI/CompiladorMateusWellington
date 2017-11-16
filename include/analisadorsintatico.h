@@ -11,9 +11,8 @@
 
 extern Token *tokens;
 extern int tkpos;
-int tpos;
-int tipo;
-Token taux;
+int tpos, tipo, loop;
+Token taux, tauxfun;
 
 int analisadorSintatico();
 
@@ -48,14 +47,10 @@ void TipoParam();
 
 /*Gramatica de TipoParamOpc*/
 /*
- * TipoParamOpc → semparam | TipoParamOpcResto
- * TipoParamOpcResto → Tipo IdResto ',' TipoParamOpcResto | ε
- * IdResto → Id | ε
+ * TipoParamOpc → semparam | Tipo [Id] {',' Tipo [Id]}
  */
 
 void TipoParamOpc();
-void TipoParamOpcResto();
-void IdResto();
 
 /*Gramatica de Comandos*/
 /*
@@ -65,10 +60,8 @@ void IdResto();
  *   Senao → Cmd
  * Enquanto → ABREPARENTESES Expr FECHAPARENTESES Cmd
  * Para → ABREPARENTESES Atrib PONTOEVIRGULA Expr PONTOEVIRGULA Atrib FECHAPARENTESES Cmd
- * Retorne → Expr ; | ;
- * Id → ABREPARENTESES Conteudo FECHAPARENTESES PONTOEVIRGULA
- *   Conteudo → Expr ConteudoResto | ε
- *   ConteudoResto → VIRGULA Expr ConteudoResto | ε
+ * Retorne → Expr PONTOEVIRGULA | PONTOEVIRGULA
+ * Id → ABREPARENTESES [Expr {VIRGULA Expr}]  FECHAPARENTESES PONTOEVIRGULA
  * NovoComando → ABRECHAVES Cmd FECHACHAVES | ε
  */
 
@@ -78,53 +71,45 @@ void Senao();
 void Enquanto();
 void Para();
 void Retorne();
-void NId();
-void Conteudo();
-void ConteudoResto();
-void NovoComando();
 
 /*Gramatica de Atribuição*/
 /*
- * Atrib → Id ATRIBUICAO Expre
+ * Atrib → Id ATRIBUICAO ExprSimp
  */
 
 int Atrib();
 
 /*Gramatica de Expressões*/
 /*
- * Expr → Expre | TermoExpr
- * TermoExpr → OpRel RestoExpr | ε
- * RestoExpr → Expre
+ * Expr → ExprSimp [ OpRel ExprSimp ]
  */
 
 void Expr();
-void TermoExpr();
-void RestoExpr();
 
 /*Gramatica de Expressões Simples*/
 /*
- * Expre → Termo Resto
- * Termo → Fator Sobra
- * Resto → ‘ +‘ Termo Resto | ‘ –‘ Termo Resto | ‘ OR‘ Termo Resto | ε
- * RestoTerm →
- * Sobra → ‘ *‘ Fator Sobra | ‘ /‘ Fator Sobra | ‘ AND‘ Fator Sobra | ε
- * Fator → Id | Id ‘(‘ Expr ‘)‘ | ‘(‘ Expr ‘)‘ | num |  intcon | realcon | caraccon | '!' Fator
+ * ExprSimp → = [ + | – ] Termo { ( + | – | || ) Termo }
+ * Termo → Fator { ( * | / | && ) Fator }
+ * Fator → Id | intcon | realcon | caraccon | cadeiacon |
+ *          Id ABREPARENTESES Expr { VIRGULA Expr } ] FECHAPARENTESES | ABREPARENTESES Expr FECHAPARENTESES | DIFERENTE Fator
  */
-void Expre(); //Simples
+void ExprSimp(); //Simples
 void Termo();
-void Resto();
-void Sobra();
 void Fator();
 
 /*Gramatica de Operador Relacional*/
 /*
- * OpRel → '==' | '!=' | '<=' | '<' | '>=' | '>'
+ * OpRel → IGUAL | DIFERENTE | MENORIGUAL | MENOR | MAIORIGUAL | MAIOR
  */
 
 int OpRel();
 
+int faltaToken();
 int novoToken();
-int ungetTPos();
-int erro(int erro);
+int retornarToken();
+void erro(int erro);
+void atualizaTipo();
+int reconheceID();
+int reconhece(int categoria, int codigo);
 
 #endif //COMPILADOR_ANALISADORSINTATICO_H

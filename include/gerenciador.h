@@ -4,9 +4,7 @@
 #include "analisadorlexico.h"
 #include "analisadorsintatico.h"
 
-#define GLOBAL -1
-#define LOCAL -2
-#define PARAM -5
+#define ZOMBIE 1
 #define DIM 100
 
 typedef struct tabela {
@@ -17,17 +15,15 @@ typedef struct tabela {
         int linha;
 } CelulaTabela;
 
-enum{INSERIR = -10, IGNORE = -11, EXCLUIR = -12, CONSULTAR = -13} operacao;
+enum Operacao {INSERIR, IGNORE, EXCLUIR, CONSULTAR};
+enum Escopo {GLOBAL, LOCAL};
 
 CelulaTabela tabela[DIM];
 int topo;
 
-void gerenciador(int operacao, int tipo, char lexema[], int zombie, int escopo, int linha);
 void inserir(int tipo, char* lexema, int zombie, int escopo, int linha);
-void excluir();
+void alterar(char lexema[], int escopo);
+void excluirLocais();
 void mostrarTabela();
-
-int consultar(char lexema[DIM], int esc);
-
 
 #endif // GERENCIADOR_H_INCLUDED

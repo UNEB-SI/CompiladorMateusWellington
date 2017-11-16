@@ -435,7 +435,7 @@ int analisadorLexico(FILE *file) {
             default: break;
         }
     }
-    printf("\n\nTokens Gerados:\n");
+    printf("\n\nTokens Gerados - Analisador Lexico:\n");
     for (tk_pos = 0; tk_pos < tkpos; tk_pos++) {
         imprimirToken(tk_pos);
     }
@@ -487,7 +487,7 @@ void criarToken(int categoria, char* valor, int codigo) {
             strcpy(tk.lexema, valor);
             break;
         case ID:
-            tk.codigo = codigo;
+            strcpy(tk.lexema, valor);
             break;
         case PR:
             tk.codigo = codigo;
@@ -525,7 +525,7 @@ void imprimirToken(int tpos) {
             printf("<REALCON / %s>\n", tokens[tpos].lexema);
             break;
         case ID:
-            printf("<ID / %s>\n", ids[tokens[tpos].codigo]);
+            printf("<ID / %s>\n", tokens[tpos].lexema);
             break;
         case PR:
             printf("<PR / %s>\n", Pr[tokens[tpos].codigo]);
