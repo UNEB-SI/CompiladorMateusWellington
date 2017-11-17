@@ -15,7 +15,6 @@ typedef struct tabela {
         int linha;
 } CelulaTabela;
 
-enum Operacao {INSERIR, IGNORE, EXCLUIR, CONSULTAR};
 enum Escopo {GLOBAL, LOCAL};
 
 CelulaTabela tabela[DIM];
