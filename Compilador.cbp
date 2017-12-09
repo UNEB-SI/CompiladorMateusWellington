@@ -43,6 +43,12 @@
         <Unit filename="src/analisadorsintatico.c">
             <Option compilerVar="CC" />
         </Unit>
+        <Unit filename="include/maqpilha.h">
+            <Option target="&lt;{~None~}&gt;" />
+        </Unit>
+        <Unit filename="src/maqpilha.c">
+            <Option compilerVar="CC" />
+        </Unit>
         <Unit filename="include/gerenciador.h">
             <Option target="&lt;{~None~}&gt;" />
         </Unit>
