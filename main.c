@@ -12,7 +12,7 @@ int main()
     }
     if (analisadorLexico(file)) {
         fclose(file);
-        analisadorSintatico();
+        analisadorCodigo();
         exit(1);
     }
 

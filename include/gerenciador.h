@@ -22,6 +22,8 @@ int topo;
 
 void inserir(int tipo, char* lexema, int zombie, int escopo, int linha);
 void alterar(char lexema[], int escopo);
+CelulaTabela consultar(char lexema[]);
+CelulaTabela consultarUltimoGlobal();
 void excluirLocais();
 void mostrarTabela();
 

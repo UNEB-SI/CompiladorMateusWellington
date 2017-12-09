@@ -3,15 +3,15 @@
 //
 
 #include "../include/analisadorsintatico.h"
+#include "../include/maqpilha.h"
 
-int i;
-
-int analisadorSintatico() {
+int analisadorCodigo() {
+    codigo = fopen("codigo.cmp", "w+");
+    configurarPilha(codigo);
     tpos = 0; loop = 0; tipo = -1;
-    printf("\n\nTokens Com Sucesso - Analisador Sintatico:\n");
-    imprimirToken(tpos);
     Prog();
-    mostrarTabela();
+    //mostrarTabela();
+    fclose(codigo);
     return 1;
 }
 
@@ -48,7 +48,7 @@ void Prog() {
             if (!reconheceID()) erro(AS_FALTAID);
             tauxfun = tokens[tpos];
             inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1);
-            alterar(tauxfun.lexema, LOCAL);
+            //alterar(tauxfun.lexema, LOCAL);
             novoToken();
             if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
             Funcao();
@@ -63,7 +63,7 @@ void Prog() {
             if (reconhece(SN, ABREPARENTESES)) {
                 tauxfun = tokens[tpos-1];
                 inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1);
-                alterar(tauxfun.lexema, LOCAL);
+                //alterar(tauxfun.lexema, LOCAL);
                 Funcao();
                 alterar(tauxfun.lexema, GLOBAL);
                 excluirLocais();
@@ -89,7 +89,6 @@ void Prog() {
 }
 
 void Funcao() {
-    printf("\n-INI FUN-\n");
     novoToken();
     TipoParam();
     novoToken();
@@ -120,12 +119,12 @@ void Funcao() {
     while (1) {
         if (!reconhece(SN, FECHACHAVES)) {
             Cmd();
-            if (!reconhece(SN, FECHACHAVES)) novoToken();
+            //CHECAR SE PODE REALMENTE TIRAR
+            //if (!reconhece(SN, FECHACHAVES)) novoToken();
         } else break;
     }
     if (!reconhece(SN, FECHACHAVES)) erro(AS_FALTACHAVES);
     novoToken();
-    printf("\n-FIM FUN-\n");
 }
 
 /*Gramatica de Tipo*/
@@ -187,6 +186,9 @@ void TipoParamOpc() {
 
 /*Gramatica de Comandos*/
 void Cmd() {
+    int tipo;
+    int result;
+
     if (reconhece(PR, SE)) {
         novoToken();
         Se();
@@ -200,16 +202,29 @@ void Cmd() {
         novoToken();
         Retorne();
     } else if (reconheceID()) {
+        taux = tokens[tpos];
         novoToken();
         if (reconhece(SN, ATRIBUICAO)) {
-            printf("\n-INI ATR-\n");
             novoToken();
-            ExprSimp();
+            result = Expr();
+            if (result != -99999) {
+                tipo = consultar(taux.lexema).tipo;
+                if (tipo == INTCON && (result != INTCON && result != CT_C)) erro(ASEM_ATRIBUICAO);
+                else if (tipo == CT_C && (result != INTCON && result != CT_C)) erro(ASEM_ATRIBUICAO);
+                else if (tipo == REALCON && result != REALCON) erro(ASEM_ATRIBUICAO);
+                else if (tipo == BOOLEANO && (result != BOOLEANO && result != INTCON)) erro(ASEM_ATRIBUICAO);
+                else if (tipo == -1) erro(ASEM_ATRIBUICAO);
+            } else {
+//                tipo = consultar(taux.lexema).tipo;
+//                if (tipo == CT_C && taux2.categoria == CT_C) ;
+//                else if (tipo == INTCON && taux2.categoria == CT_C) ;
+//                else if (tipo == CT_C && taux2.categoria == INTCON) ;
+//                else if (tipo == CT_L && taux2.categoria == CT_L) ;
+//                else erro(ASEM_ATRIBUICAO);
+            }
             if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
-            printf("-FIM ATR-\n\n");
         } else {
             if (reconhece(SN, ABREPARENTESES)) {
-                printf("\n-INI FID-\n");
                 novoToken();
                 if (!reconhece(SN, FECHAPARENTESE)) {
                     Expr();
@@ -221,7 +236,6 @@ void Cmd() {
                 if (!reconhece(SN, FECHAPARENTESE)) erro(AS_FALTAPARENTESE);
                 novoToken();
                 if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
-                printf("-FIM FID-\n\n");
             } else {
                 erro(AS_ERRO);
             }
@@ -232,19 +246,17 @@ void Cmd() {
             Cmd();
             novoToken();
         }
-    } else if (reconhece(SN, PONTOEVIRGULA)) {}
+    } else if (reconhece(SN, PONTOEVIRGULA)) {novoToken();}
 }
 
 void Se() {
     if (reconhece(SN, ABREPARENTESES)) {
-        printf("\n-INI  SE-\n");
         novoToken();
         Expr();
         if (!reconhece(SN, FECHAPARENTESE)) erro(AS_SE);
         novoToken();
         Cmd();
         novoToken();
-        printf("\n-FIM  SE-\n");
         Senao();
     } else {
         Senao();
@@ -253,11 +265,9 @@ void Se() {
 
 void Senao() {
     if (reconhece(PR, SENAO)) {
-        printf("\n-INI SEN-\n");
         novoToken();
         Cmd();
         novoToken();
-        printf("\n-FIM SEN-\n");
     } else ;
 }
 
@@ -275,7 +285,6 @@ void Enquanto() {
 
 void Para() {
     if (reconhece(SN, ABREPARENTESES)) {
-        printf("\n-INI PAR-\n");
         novoToken();
         if (!Atrib()) erro(AS_PARA);
         if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_PARA);
@@ -288,97 +297,126 @@ void Para() {
             novoToken();
             Cmd();
             novoToken();
-            printf("\n-FIM PAR-\n");
         } else erro(AS_PARA);
     }
 }
 
 void Retorne() {
-    if (!reconhece(SN, PONTOEVIRGULA)) {
-        printf("\n-INI RET-\n");
+    CelulaTabela function = consultarUltimoGlobal();
+    if (function.tipo == SEMRETORNO && reconhece(SN, PONTOEVIRGULA)) ;
+    else if (function.tipo != SEMRETORNO && !reconhece(SN, PONTOEVIRGULA)) {
         Expr();
         if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
-        printf("\n-FIM RET-\n");
-    }
+    } else erro(ASEM_RETORNARFUNCAO);
 }
 
 /*Gramatica de Atribuição*/
 int Atrib() {
+    float result;
     if (tokens[tpos].categoria == ID) {
-        printf("\n-INI ATR\n");
+        taux = tokens[tpos];
         novoToken();
         if (tokens[tpos].categoria == SN &&
             tokens[tpos].codigo == ATRIBUICAO) {
             novoToken();
-            ExprSimp();
-            printf("\n-FIM ATR\n");
+            result = Expr();
+            if (result != -99999) {
+                tipo = consultar(taux.lexema).tipo;
+                if (tipo == INTCON) {
+                    if (!isInteger(result)) erro(ASEM_ATRIBUICAO);
+                } else if (tipo == REALCON) {
+                } else erro(ASEM_ATRIBUICAO);
+            } else erro(ASEM_ATRIBUICAO);
             return 1;
         } else {
             retornarToken();
-            printf("\n-FIM ATR\n");
         }
     }
     return 0;
 }
 
 /*Gramatica de Expressões*/
-void Expr() {
-    i++;
-    int j;
-    for (j = 0; j < i; j++) printf("-");
-    printf("INI EXP-\n");
-    ExprSimp();
-    //novoToken();
+int Expr() {
+    int result, segundoOp;
+    result = ExprSimp();
+    printf("\n\n\n\n RESULTADO = %d \n\n\n\n", result);
     if (OpRel()) {
-        printf("\n-INI REL-\n");
         novoToken();
-        ExprSimp();
-        printf("\n-FIM REL-\n");
+        segundoOp = Expr();
+        if ((result == INTCON || result == REALCON || result == CT_C) && (segundoOp == INTCON || segundoOp == REALCON || segundoOp == CT_C)) result = BOOLEANO;
+        else erro(ASEM_ATRIBUICAO);
+        printf("\n\n\n\n RESULTADO = %d \n\n\n\n", result);
     } else ;
-    i--;
-    printf("\n");
-    for (j = 0; j < i; j++) printf("-");
-    printf("-FIM EXP-\n");
+    return result;
 }
 
 /*Gramatica de Expressões Simples*/
-void ExprSimp() {
+int ExprSimp() {
+    int primOp, result;
     if (reconhece(SN, ADICAO) || reconhece(SN, SUBTRACAO)) novoToken();
-    Termo();
+    primOp = Termo();
+    result = Resto(primOp);
+    return  result;
+}
+
+int Termo() {
+    int primOp, result;
+    primOp = Fator();
+    result = Sobra(primOp);
+    return result;
+}
+
+int Resto(int primOp) {
+    Token salva;
+    int segunOp, tmpResult = 0, result;
+    result = primOp;
     while (reconhece(SN, ADICAO) || reconhece(SN, SUBTRACAO) || reconhece(SN, OR)) {
-        imprimirToken(tpos);
+        salva = tokens[tpos];
         novoToken();
-        Termo();
+        segunOp = Termo();
+        if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
+        else if (primOp == REALCON || segunOp == REALCON) tmpResult = REALCON;
+        else if (primOp == CT_C && segunOp == CT_C) tmpResult = CT_C;
+        else if ((primOp == INTCON && segunOp == CT_C) || (primOp == CT_C && segunOp == INTCON)) tmpResult = CT_C;
+        else erro(ASEM_ATRIBUICAO);
+        result = Resto(tmpResult);
     }
+    return result;
 }
 
-void Termo() {
-    Fator();
+int Sobra(int primOp) {
+    Token salva;
+    int segunOp, tmpResult = 0, result;
+    result = primOp;
     while (reconhece(SN, MULTIPLICACAO) || reconhece(SN, DIVISAO) || reconhece(SN, AND)) {
-        imprimirToken(tpos);
+        salva = tokens[tpos];
         novoToken();
-        imprimirToken(tpos);
-        Fator();
-        //retornarToken();
+        segunOp = Fator();
+        if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
+        else if (primOp == REALCON || segunOp == REALCON) tmpResult = REALCON;
+        else if (primOp == CT_C && segunOp == CT_C) tmpResult = CT_C;
+        else if ((primOp == INTCON && segunOp == CT_C) || (primOp == CT_C && segunOp == INTCON)) tmpResult = CT_C;
+        else erro(ASEM_ATRIBUICAO);
+        result = Sobra(tmpResult);
     }
+    return result;
 }
 
-void Fator() {
+int Fator() {
+    int result = -99999;
     if (tokens[tpos].categoria == INTCON ||
         tokens[tpos].categoria == REALCON ||
             (tokens[tpos].categoria == CT_C && tokens[tpos].lexema != "!")||
         tokens[tpos].categoria == CT_L)
     {
-        imprimirToken(tpos);
+        result = tokens[tpos].categoria;
+        taux2 = tokens[tpos];
         novoToken();
     } else if (reconheceID()) {
-        imprimirToken(tpos);
         novoToken();
         if (reconhece(SN, ABREPARENTESES)) {
-            imprimirToken(tpos);
             novoToken();
             if (!reconhece(SN, FECHAPARENTESE)) {
-                imprimirToken(tpos);
                 Expr();
                 while (reconhece(SN, VIRGULA)) {
                     novoToken();
@@ -386,15 +424,16 @@ void Fator() {
                 }
             }
             if (!reconhece(SN, FECHAPARENTESE)) erro(AS_FALTAPARENTESE);
-            imprimirToken(tpos);
             novoToken();
+        } else {
+            retornarToken();
+            CelulaTabela celulaTabela = consultar(tokens[tpos].lexema);
+            novoToken();
+            return celulaTabela.tipo;
         }
     } else if (reconhece(SN, ABREPARENTESES)) {
-        imprimirToken(tpos);
         novoToken();
-        imprimirToken(tpos);
-        Expr();
-        imprimirToken(tpos);
+        result = Expr();
         if (!reconhece(SN, FECHAPARENTESE)) erro(AS_FALTAPARENTESE);
         novoToken();
     } else if (reconhece(SN, NOT)) {
@@ -403,6 +442,7 @@ void Fator() {
     } else {
         erro(AS_FALTAEXPREOUNUM);
     }
+    return result;
 
 }
 
@@ -425,7 +465,6 @@ int faltaToken() {
 int novoToken() {
     if (tkpos < tpos) erro(ERRO_INTERNO);
     tpos++;
-    imprimirToken(tpos);
     return tpos;
 }
 
@@ -449,4 +488,9 @@ int reconheceID() {
 int reconhece(int categoria, int codigo) {
     return tokens[tpos].categoria == categoria &&
            tokens[tpos].codigo == codigo;
+}
+
+int isInteger(float val) {
+    int truncated = (int)val;
+    return (val == truncated);
 }

@@ -7,14 +7,16 @@
 
 #include "analisadorlexico.h"
 #include "gerenciador.h"
+
 #include "erro.h"
 
 extern Token *tokens;
 extern int tkpos;
+FILE *codigo;
 int tpos, tipo, loop;
-Token taux, tauxfun;
+Token taux, taux2, tauxfun;
 
-int analisadorSintatico();
+int analisadorCodigo();
 
 /*Gramatica de Programa*/
 /*
@@ -74,28 +76,32 @@ void Retorne();
 
 /*Gramatica de Atribuição*/
 /*
- * Atrib → Id ATRIBUICAO ExprSimp
+ * Atrib → Id ATRIBUICAO Expr
  */
 
 int Atrib();
 
 /*Gramatica de Expressões*/
 /*
- * Expr → ExprSimp [ OpRel ExprSimp ]
+ * Expr → ExprSimp [ OpRel Expr ]
  */
 
-void Expr();
+int Expr();
 
 /*Gramatica de Expressões Simples*/
 /*
- * ExprSimp → = [ + | – ] Termo { ( + | – | || ) Termo }
- * Termo → Fator { ( * | / | && ) Fator }
+ * ExprSimp → = [ + | – ] Termo Resto
+ * Termo → Fator Sobra
+ * Resto → [ [ SOMA | SUBTRACAO | OR ]  Termo ]
+ * Sobra → [ [ MULTIPLICACAO | DIVISAO | AND ]  Sobra ]
  * Fator → Id | intcon | realcon | caraccon | cadeiacon |
  *          Id ABREPARENTESES Expr { VIRGULA Expr } ] FECHAPARENTESES | ABREPARENTESES Expr FECHAPARENTESES | DIFERENTE Fator
  */
-void ExprSimp(); //Simples
-void Termo();
-void Fator();
+int ExprSimp();
+int Termo();
+int Resto(int primOp);
+int Sobra(int primOp);
+int Fator();
 
 /*Gramatica de Operador Relacional*/
 /*
@@ -111,5 +117,6 @@ void erro(int erro);
 void atualizaTipo();
 int reconheceID();
 int reconhece(int categoria, int codigo);
+int isInteger(float val);
 
 #endif //COMPILADOR_ANALISADORSINTATICO_H

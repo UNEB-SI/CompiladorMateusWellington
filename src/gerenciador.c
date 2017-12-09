@@ -22,6 +22,32 @@ void alterar(char lexema[], int escopo) {
 	}
 }
 
+CelulaTabela consultar(char lexema[]) {
+	CelulaTabela cedula;
+	cedula.tipo = -1;
+	int aux;
+	for (aux = 0; aux < topo + 1; aux++) {
+		if (strcmp(tabela[aux].lexema, lexema) == 0) {
+			cedula = tabela[aux];
+			break;
+		}
+	}
+	return cedula;
+}
+
+CelulaTabela consultarUltimoGlobal() {
+	CelulaTabela cedula;
+	cedula.tipo = -1;
+	int aux;
+	for (aux = topo - 1; aux >= 0; aux--) {
+		if (tabela[aux].escopo == GLOBAL) {
+			cedula = tabela[aux];
+			break;
+		}
+	}
+	return cedula;
+}
+
 void excluirLocais(){
 	topo--;
 	while(1) {

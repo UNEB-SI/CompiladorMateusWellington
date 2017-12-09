@@ -2,25 +2,14 @@
 
 prototipo inteiro fibonacci(inteiro);
 
+inteiro delta;
+
 semretorno principal(semparam) {
 
-     inteiro i, n;
-
-     imprima("Digite a qtd de termos da sequencia: ");
-     leia(n);
-     imprima("A sequencia de Fibonacci solicitada eh: ");
-     imprima(enter);
-     x=y+3;;;;;;;
-
-     para (i=0; i<n; i=i+1){
-            imprima(fibonacci(i+1));
-            }
-      retorne;
-}
-
-inteiro fibbonaci(inteiro num) {
-
-      se (!n) { retorne 1;}
-      senao
-             {retorne (fibonacci(num-1)+fibonacci(num-2));}
+    caracter b;
+    booleano a;
+    inteiro delta;
+    delta = 'b' + 2;
+    a = 1 > 0;
+    retorne;
 }

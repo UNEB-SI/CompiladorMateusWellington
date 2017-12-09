@@ -1,5 +1,5 @@
 //
-// Created by mateus on 11/10/2017.
+// Created by mateus and wellington on 11/10/2017.
 //
 
 #include "../include/erro.h"
@@ -18,7 +18,9 @@ const char * Erro[] = {"\nErro ao abrir o arquivo\n",
                        "\nErro Sintatico: Era esperado chaves na linha %d.\n",
                        "\nErro Sintatico: Era esperado um indentificador na linha %d.\n",
                        "\nErro Sintatico: Era esperado um ponto e virgula na linha %d.\n",
-                       "\nErro Sintatico: Operando invalido! Era esperado uma expressao ou um numero na linha %d."};
+                       "\nErro Sintatico: Operando invalido! Era esperado uma expressao ou um numero na linha %d.\n",
+                       "\nErro Semantico: Variavel nao instanciada ou conflito de tipo na linha %d.\n",
+                       "\nErro Semantico: Retorno nao condizente ao tipo da funcao na linha %d.\n"};
 
 void logErro(int erro, int num, ...) {
     va_list list;
