@@ -15,11 +15,18 @@ int topoPilha;
 FILE *file;
 
 void configurarPilha(FILE *arq);
-void PUSH(float var);
+void PUSH(Token tk);
 void POP();
 void COPY();
-void STOR(char* var);
+void STOR(Token tk);
+void LOADD(Token tk); //Teste
 void LOAD(float var);
+/*Valores Inteiros*/
+void ADD();
+void SUB();
+void MUL();
+void DIV();
+/*Valores Reais*/
 void ADD();
 void SUB();
 void MUL();

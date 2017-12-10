@@ -193,6 +193,7 @@ void TipoParam() {
         inserir(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, tokens[tpos].linha + 1);
         novoToken();
         while (1) {
+            LOADD(tokens[tpos]);
             if (reconhece(SN, VIRGULA)) {
                 novoToken();
                 if (!Tipo()) erro(AS_ERRO);
@@ -272,6 +273,7 @@ void Cmd() {
             else if (tipo == BOOLEANO && (result != BOOLEANO && result != INTCON)) erro(ASEM_ATRIBUICAO);
             else if (tipo == -1) erro(ASEM_ATRIBUICAO);
             if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
+            STOR(taux);
         } else {
             if (reconhece(SN, ABREPARENTESES)) {
                 celulaTabela = consultar(taux.lexema);
@@ -442,8 +444,17 @@ int Resto(int primOp) {
     result = primOp;
     while (reconhece(SN, ADICAO) || reconhece(SN, SUBTRACAO) || reconhece(SN, OR)) {
         if (reconhece(SN, OR)) salva = tokens[tpos];
-        novoToken();
-        segunOp = Termo();
+
+        if(reconhece(SN, ADICAO)){
+            novoToken();
+            segunOp = Termo();
+            ADD();
+        }
+        if(reconhece(SN, SUBTRACAO)){
+            novoToken();
+            segunOp = Termo();
+            SUB();
+        }
         if (salva.codigo == OR) tmpResult = BOOLEANO;
         else if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
         else if (primOp == REALCON && segunOp == REALCON) tmpResult = REALCON;
@@ -461,8 +472,16 @@ int Sobra(int primOp) {
     result = primOp;
     while (reconhece(SN, MULTIPLICACAO) || reconhece(SN, DIVISAO) || reconhece(SN, AND)) {
         if (reconhece(SN, OR)) salva = tokens[tpos];
-        novoToken();
-        segunOp = Fator();
+        if(reconhece(SN, MULTIPLICACAO)){
+            novoToken();
+            segunOp = Termo();
+            MUL();
+        }
+        if(reconhece(SN, DIVISAO)){
+            novoToken();
+            segunOp = Termo();
+            DIV();
+        }
         if (salva.codigo == OR) tmpResult = BOOLEANO;
         else if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
         else if (primOp == REALCON && segunOp == REALCON) tmpResult = REALCON;
@@ -483,6 +502,7 @@ int Fator() {
             (tokens[tpos].categoria == CT_C && tokens[tpos].lexema != "!")||
         tokens[tpos].categoria == CT_L)
     {
+        PUSH(tokens[tpos]);
         result = tokens[tpos].categoria;
         novoToken();
     } else if (reconheceID()) {

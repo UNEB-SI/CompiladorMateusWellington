@@ -31,3 +31,51 @@
 1510584505 source:/home/acso/Desktop/CompiladorMateusWellington/src/erro.c
 	"../include/erro.h"
 
+1512929715 source:c:\users\wellington\documents\compiladormateuswellington\main.c
+	<stdio.h>
+	<stdlib.h>
+	"include/erro.h"
+	"include/analisadorlexico.h"
+	"include/analisadorsintatico.h"
+
+1512929715 c:\users\wellington\documents\compiladormateuswellington\include\erro.h
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+
+1512929715 c:\users\wellington\documents\compiladormateuswellington\include\analisadorlexico.h
+	<stdio.h>
+	<ctype.h>
+	<stdlib.h>
+	<string.h>
+	"erro.h"
+
+1512929715 c:\users\wellington\documents\compiladormateuswellington\include\analisadorsintatico.h
+	"analisadorlexico.h"
+	"gerenciador.h"
+	"erro.h"
+
+1512929715 c:\users\wellington\documents\compiladormateuswellington\include\gerenciador.h
+	"analisadorlexico.h"
+	"analisadorsintatico.h"
+
+1512929715 source:c:\users\wellington\documents\compiladormateuswellington\src\analisadorlexico.c
+	"../include/analisadorlexico.h"
+
+1512952945 source:c:\users\wellington\documents\compiladormateuswellington\src\analisadorsintatico.c
+	"../include/analisadorsintatico.h"
+	"../include/maqpilha.h"
+
+1512947971 c:\users\wellington\documents\compiladormateuswellington\include\maqpilha.h
+	"analisadorlexico.h"
+	"analisadorsintatico.h"
+
+1512929715 source:c:\users\wellington\documents\compiladormateuswellington\src\erro.c
+	"../include/erro.h"
+
+1512929715 source:c:\users\wellington\documents\compiladormateuswellington\src\gerenciador.c
+	"../include/gerenciador.h"
+
+1512947953 source:c:\users\wellington\documents\compiladormateuswellington\src\maqpilha.c
+	"../include/maqpilha.h"
+
