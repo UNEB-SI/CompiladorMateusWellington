@@ -13,8 +13,8 @@
 extern Token *tokens;
 extern int tkpos;
 FILE *codigo;
-int tpos, tipo, loop;
-Token taux, taux2, tauxfun;
+int tpos, tipo, loop, funretorno;
+Token taux, tauxfun;
 
 int analisadorCodigo();
 

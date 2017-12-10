@@ -22,8 +22,11 @@ int topo;
 
 void inserir(int tipo, char* lexema, int zombie, int escopo, int linha);
 void alterar(char lexema[], int escopo);
+void  alterarFuncao(char lexema[]);
+void alterarParametro(char funcao[], char lexema[], int escopo, int posicao);
 CelulaTabela consultar(char lexema[]);
-CelulaTabela consultarUltimoGlobal();
+CelulaTabela consultar2(char lexema[]);
+CelulaTabela consultarTipoParametro(char lexema[], int posicao);
 void excluirLocais();
 void mostrarTabela();
 

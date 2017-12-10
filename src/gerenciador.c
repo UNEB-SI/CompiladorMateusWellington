@@ -12,40 +12,78 @@ void inserir(int tipo, char lexema[], int zombie, int escopo, int linha) {
 	topo++;
 }
 
-void alterar(char lexema[], int escopo) {
-	int aux;
+void  alterarFuncao(char lexema[]) {
+    int aux;
+    for (aux = 0; aux < topo + 1; aux++) {
+        if (strcmp(tabela[aux].lexema, lexema) == 0) {
+            tabela[aux].zombie = !ZOMBIE;
+        }
+    }
+}
+
+void alterarParametro(char funcao[], char lexema[], int escopo, int posicao) {
+    int aux, pos = 0;
 	for (aux = 0; aux < topo + 1; aux++) {
-		if (strcmp(tabela[aux].lexema, lexema) == 0) {
-			tabela[aux].escopo = escopo;
-			break;
-		}
+        if (pos > 0 && tabela[aux].zombie != ZOMBIE) break;
+        if (pos > 0 &&
+            strcmp(tabela[aux].lexema, funcao) != 0 &&
+            pos == posicao)
+        {
+            strcpy(tabela[aux].lexema, lexema);
+            tabela[aux].escopo = escopo;
+            break;
+        }
+        if (pos > 0) pos++;
+        if (strcmp(tabela[aux].lexema, funcao) == 0/* && tabela[aux].zombie == ZOMBIE*/) {
+            pos = 1;
+        }
 	}
 }
 
 CelulaTabela consultar(char lexema[]) {
-	CelulaTabela cedula;
-	cedula.tipo = -1;
-	int aux;
-	for (aux = 0; aux < topo + 1; aux++) {
-		if (strcmp(tabela[aux].lexema, lexema) == 0) {
-			cedula = tabela[aux];
-			break;
-		}
-	}
-	return cedula;
+    CelulaTabela cedula;
+    cedula.tipo = -1;
+    int aux;
+    for (aux = 0; aux < topo + 1; aux++) {
+        if (strcmp(tabela[aux].lexema, lexema) == 0) {
+            cedula = tabela[aux];
+            if (cedula.zombie != ZOMBIE) break;
+        }
+    }
+    return cedula;
 }
 
-CelulaTabela consultarUltimoGlobal() {
-	CelulaTabela cedula;
-	cedula.tipo = -1;
-	int aux;
-	for (aux = topo - 1; aux >= 0; aux--) {
-		if (tabela[aux].escopo == GLOBAL) {
-			cedula = tabela[aux];
-			break;
-		}
-	}
-	return cedula;
+CelulaTabela consultar2(char lexema[]) {
+    CelulaTabela cedula;
+    cedula.tipo = -1;
+    int aux;
+    for (aux = 0; aux < topo + 1; aux++) {
+        if (strcmp(tabela[aux].lexema, lexema) == 0) {
+            cedula = tabela[aux];
+            break;
+        }
+    }
+    return cedula;
+}
+
+CelulaTabela consultarTipoParametro(char lexema[], int posicao) {
+    CelulaTabela cedula;
+    cedula.tipo = -1;
+    int aux, pos = 0;
+    for (aux = 0; aux < topo + 1; aux++) {
+        if (pos > 0 && tabela[aux].zombie != ZOMBIE) break;
+        if (pos > 0 &&
+            strcmp(tabela[aux].lexema, lexema) != 0 &&
+            pos == posicao) {
+            cedula = tabela[aux];
+            break;
+        }
+        if (pos > 0) pos++;
+        if (strcmp(tabela[aux].lexema, lexema) == 0/* && tabela[aux].zombie == ZOMBIE*/) {
+            pos = 1;
+        }
+    }
+    return cedula;
 }
 
 void excluirLocais(){

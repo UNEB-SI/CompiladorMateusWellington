@@ -20,7 +20,15 @@ const char * Erro[] = {"\nErro ao abrir o arquivo\n",
                        "\nErro Sintatico: Era esperado um ponto e virgula na linha %d.\n",
                        "\nErro Sintatico: Operando invalido! Era esperado uma expressao ou um numero na linha %d.\n",
                        "\nErro Semantico: Variavel nao instanciada ou conflito de tipo na linha %d.\n",
-                       "\nErro Semantico: Retorno nao condizente ao tipo da funcao na linha %d.\n"};
+                       "\nErro Semantico: Funcao sem retorno, ou retorno nao condizente ao seu tipo na linha %d.\n",
+                       "\nErro Semantico: Nao e possivel declarar variaveis com nomes iguais. Linha %d.\n",
+                       "\nErro Semantico: Nao e possivel criar mais de uma assinaturas ou declarar funcoes com nomes iguais. Linha %d.\n",
+                       "\nErro Semantico: Os parametros da assinatura da funcao nao coincide com a declarada na linha %d.\n",
+                       "\nErro Semantico: Tipo do parametro de retorno nao coincide com a assinatura na linha %d.\n",
+                       "\nErro Semantico: Chamada de funcao invalida. A funcao deve ser declarada ou instanciada na linha %d.\n",
+                       "\nErro Semantico: Chamada de funcao invalida. A funcao deve ter retorno na linha %d.\n",
+                       "\nErro Semantico: Chamada de funcao invalida. A funcao nao deve ter retorno na linha %d.\n",
+                       "\nErro Semantico: Parametros invalidos na linha %d.\n"};
 
 void logErro(int erro, int num, ...) {
     va_list list;
