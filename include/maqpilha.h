@@ -15,14 +15,26 @@ int topoPilha;
 FILE *file;
 
 void configurarPilha(FILE *arq);
-void PUSH(float var);
+void PUSH(Token tk);
 void POP();
 void COPY();
-void STOR(char* var);
-void LOAD(float var);
+void STOR(Token tk);
+void LOAD(Token tk);
 void ADD();
 void SUB();
 void MUL();
 void DIV();
+
+int tDeclarados, tUsados;
+int gerarLabel();
+int pegarLabel();
+void LABEL(int label);
+void GOTO(int label);
+void GOFALSE(int label);
+void GOTRUE(int label);
+
+void AMEM(int size);
+
+void HALT();
 
 #endif //COMPILADOR_MAQPILHA_H

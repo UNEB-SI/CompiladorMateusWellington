@@ -59,11 +59,9 @@ void Prog() {
             if (!reconheceID()) erro(AS_FALTAID);
             tauxfun = tokens[tpos];
             celulaTabela = consultar(tauxfun.lexema);
-            if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) {
-                erro(ASEM_DECLFUNIGUAL);
-            } else {
-                inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1);
-            }
+            if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLFUNIGUAL);
+            else if (celulaTabela.tipo != -1 && celulaTabela.tipo != tipo) erro(ASEM_DECLTIPORETDIFERENTE);
+            inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1);
             novoToken();
             if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
             Funcao();
@@ -79,11 +77,7 @@ void Prog() {
                 celulaTabela = consultar(tauxfun.lexema);
                 if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLFUNIGUAL);
                 else if (celulaTabela.tipo != -1 && celulaTabela.tipo != tipo) erro(ASEM_DECLTIPORETDIFERENTE);
-//                else if (celulaTabela.tipo != -1 && celulaTabela.zombie == ZOMBIE) {
-//                    alterarFuncao(tauxfun.lexema);
-//                } else {
-                    inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1);
-//                }
+                inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1);
                 Funcao();
                 //Função com tipo precisa de retorno
                 if (funretorno != 1) erro(ASEM_RETORNARFUNCAO);
@@ -113,9 +107,11 @@ void Prog() {
         } else {loop++;}
         if (loop > 10) erro(ERRO_INTERNO);
     }
+    HALT();
 }
 
 void Funcao() {
+    int decl = 0;
     CelulaTabela celulaTabela;
     novoToken();
     TipoParam();
@@ -142,12 +138,15 @@ void Funcao() {
                     if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLVARIGUAL);
                     inserir(tipo, tokens[tpos].lexema, !ZOMBIE, LOCAL, tokens[tpos].linha + 1);
                     novoToken();
+                    decl++;
                 } else break;
             }
             if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
             novoToken();
+            decl++;
         } else break;
     }
+    AMEM(decl);
     //COMANDOS
     while (1) {
         if (!reconhece(SN, FECHACHAVES)) {
@@ -155,6 +154,7 @@ void Funcao() {
             //CHECAR SE PODE REALMENTE TIRAR
             //if (!reconhece(SN, FECHACHAVES)) novoToken();
         } else break;
+        imprimirToken(tpos);
     }
     if (!reconhece(SN, FECHACHAVES)) erro(AS_FALTACHAVES);
     novoToken();
@@ -272,6 +272,7 @@ void Cmd() {
             else if (tipo == BOOLEANO && (result != BOOLEANO && result != INTCON)) erro(ASEM_ATRIBUICAO);
             else if (tipo == -1) erro(ASEM_ATRIBUICAO);
             if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
+            STOR(taux);
         } else {
             if (reconhece(SN, ABREPARENTESES)) {
                 celulaTabela = consultar(taux.lexema);
@@ -309,25 +310,37 @@ void Cmd() {
         }
     } else if (reconhece(SN, ABRECHAVES)) {
         novoToken();
+        printf("OI 1 - %d \n", tpos);
         while (!reconhece(SN, FECHACHAVES)) {
             Cmd();
+            imprimirToken(tpos);
             novoToken();
         }
+        //novoToken();
     } else if (reconhece(SN, PONTOEVIRGULA)) {novoToken();}
 }
 
 void Se() {
+    printf("OI 2 - %d \n", tpos);
+    int result, label;
     if (reconhece(SN, ABREPARENTESES)) {
         novoToken();
-        Expr();
+        result = Expr();
+        if (result != INTCON && result != BOOLEANO) erro(ASEM_NOTBOOLEANO);
+        label = pegarLabel();
+        GOFALSE(label);
         if (!reconhece(SN, FECHAPARENTESE)) erro(AS_SE);
         novoToken();
         Cmd();
+        label = pegarLabel();
+        GOTO(label);
+        label = gerarLabel();
+        LABEL(label);
         novoToken();
         Senao();
-    } else {
-        Senao();
-    }
+        label = gerarLabel();
+        LABEL(label);
+    } else erro(AS_SE);
 }
 
 void Senao() {
@@ -339,33 +352,49 @@ void Senao() {
 }
 
 void Enquanto() {
+    int result;
     if (reconhece(SN, ABREPARENTESES)) {
+        LABEL(gerarLabel());
         novoToken();
-        Expr();
+        result = Expr();
+        if (result != INTCON && result != BOOLEANO) erro(ASEM_NOTBOOLEANO);
+        GOFALSE(gerarLabel());
         if (reconhece(SN, FECHAPARENTESE)) {
             novoToken();
             Cmd();
             novoToken();
         } else erro(AS_ENQUANTO);
-    }
+        GOTO(pegarLabel());
+        LABEL(pegarLabel());
+    } else erro(AS_ENQUANTO);
 }
 
 void Para() {
+    int result;
     if (reconhece(SN, ABREPARENTESES)) {
         novoToken();
         if (!Atrib()) erro(AS_PARA);
+        LABEL(gerarLabel());
         if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_PARA);
         novoToken();
-        Expr();
+        result = Expr();
+        if (result != INTCON && result != BOOLEANO) erro(ASEM_NOTBOOLEANO);
+        GOFALSE(gerarLabel());
+        GOTO(gerarLabel());
+        LABEL(gerarLabel());
         if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_PARA);
         novoToken();
         if (!Atrib()) erro(AS_PARA);
+        GOTO(pegarLabel());
+        LABEL(pegarLabel() + 1);
         if (reconhece(SN, FECHAPARENTESE)) {
             novoToken();
             Cmd();
             novoToken();
         } else erro(AS_PARA);
-    }
+        GOTO(pegarLabel() + 1);
+        LABEL(pegarLabel() - 2);
+    } else erro(AS_PARA);
 }
 
 void Retorne() {
@@ -390,13 +419,12 @@ int Atrib() {
             tokens[tpos].codigo == ATRIBUICAO) {
             novoToken();
             result = Expr();
-            if (result != -99999) {
-                tipo = consultar(taux.lexema).tipo;
-                if (tipo == INTCON) {
-                    if (!isInteger(result)) erro(ASEM_ATRIBUICAO);
-                } else if (tipo == REALCON) {
-                } else erro(ASEM_ATRIBUICAO);
+            tipo = consultar(taux.lexema).tipo;
+            if (tipo == INTCON) {
+                if (!isInteger(result)) erro(ASEM_ATRIBUICAO);
+            } else if (tipo == REALCON) {
             } else erro(ASEM_ATRIBUICAO);
+            STOR(taux);
             return 1;
         } else {
             retornarToken();
@@ -483,6 +511,7 @@ int Fator() {
             (tokens[tpos].categoria == CT_C && tokens[tpos].lexema != "!")||
         tokens[tpos].categoria == CT_L)
     {
+        PUSH(tokens[tpos]);
         result = tokens[tpos].categoria;
         novoToken();
     } else if (reconheceID()) {
@@ -521,6 +550,7 @@ int Fator() {
         } else {
             retornarToken();
             celulaTabela = consultar(tokens[tpos].lexema);
+            LOAD(tokens[tpos]);
             novoToken();
             result = celulaTabela.tipo;
         }

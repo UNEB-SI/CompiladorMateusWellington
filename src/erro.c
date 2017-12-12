@@ -28,7 +28,8 @@ const char * Erro[] = {"\nErro ao abrir o arquivo\n",
                        "\nErro Semantico: Chamada de funcao invalida. A funcao deve ser declarada ou instanciada na linha %d.\n",
                        "\nErro Semantico: Chamada de funcao invalida. A funcao deve ter retorno na linha %d.\n",
                        "\nErro Semantico: Chamada de funcao invalida. A funcao nao deve ter retorno na linha %d.\n",
-                       "\nErro Semantico: Parametros invalidos na linha %d.\n"};
+                       "\nErro Semantico: Parametros invalidos na linha %d.\n",
+                       "\nErro Semantico: O retorno da expressao nao e booleano na linha %d.\n"};
 
 void logErro(int erro, int num, ...) {
     va_list list;

@@ -9,18 +9,81 @@ void configurarPilha(FILE *arq) {
     topoPilha = 0;
 }
 
-void LOAD(float var) {
-    pilha[topoPilha] = var;
-    topoPilha++;
-    char buffer[10];
-    snprintf(buffer, sizeof buffer, "%f", var);
+void PUSH(Token tk) {
+    char str[20] = "PUSH ";
+    strcat(str, tk.lexema);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void STOR(Token tk) {
+    char str[20] = "STOR ";
+    strcat(str, tk.lexema);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void LOAD(Token tk) {
     char str[20] = "LOAD ";
-    strcat(str, buffer);
+    strcat(str, tk.lexema);
     strcat(str, "\n");
     fwrite(str, 1, sizeof(str), file);
 }
 
 void MUL() {
     char* str = "MUL\n";
+    fwrite(str, 1, sizeof(str), file);
+}
+
+int gerarLabel() {
+    return ++tDeclarados;
+}
+
+int pegarLabel() {
+    return ++tUsados;
+}
+
+void LABEL(int label) {
+    char str[20] = "LABEL L";
+    char buffer[10];
+    sprintf(buffer, "%d", label);
+    strcat(str, buffer);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void GOTO(int label) {
+    char str[20] = "GOTO L";
+    char buffer[10];
+    sprintf(buffer, "%d", label);
+    strcat(str, buffer);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void GOFALSE(int label) {
+    char str[20] = "GOFALSE L";
+    char buffer[10];
+    sprintf(buffer, "%d", label);
+    strcat(str, buffer);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void GOTRUE(int label) {
+
+}
+
+void AMEM(int size) {
+    char str[20] = "AMEM ";
+    char buffer[10];
+    sprintf(buffer, "%d", size);
+    strcat(str, buffer);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void HALT() {
+    char* str = "HALT";
     fwrite(str, 1, sizeof(str), file);
 }
