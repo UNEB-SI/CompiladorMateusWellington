@@ -20,6 +20,12 @@ void POP();
 void COPY();
 void STOR(Token tk);
 void LOAD(Token tk);
+/*Valores Inteiros*/
+void ADD();
+void SUB();
+void MUL();
+void DIV();
+/*Valores Reais*/
 void ADD();
 void SUB();
 void MUL();

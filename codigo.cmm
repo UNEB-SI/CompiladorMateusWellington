@@ -1,6 +1,10 @@
 /* ---------------  TOTALLY USELESS TEST PROGRAM ---------------- */
 
+inteiro x;
+
 semretorno PRINCIPAL(semparam){
     inteiro NUMERO,i;
     inteiro A,B,C;
 }
+
+

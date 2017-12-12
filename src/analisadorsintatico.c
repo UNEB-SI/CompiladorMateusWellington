@@ -105,7 +105,10 @@ void Prog() {
                 erro(AS_FALTAPONTOEVIRGULA);
             }
         } else {loop++;}
-        if (loop > 10) erro(ERRO_INTERNO);
+        if (loop > 10) {
+            novoToken();
+            //erro(ERRO_INTERNO);
+        }
     }
     HALT();
 }
@@ -154,7 +157,6 @@ void Funcao() {
             //CHECAR SE PODE REALMENTE TIRAR
             //if (!reconhece(SN, FECHACHAVES)) novoToken();
         } else break;
-        imprimirToken(tpos);
     }
     if (!reconhece(SN, FECHACHAVES)) erro(AS_FALTACHAVES);
     novoToken();
@@ -193,6 +195,7 @@ void TipoParam() {
         inserir(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, tokens[tpos].linha + 1);
         novoToken();
         while (1) {
+            LOAD(tokens[tpos]);
             if (reconhece(SN, VIRGULA)) {
                 novoToken();
                 if (!Tipo()) erro(AS_ERRO);
@@ -310,10 +313,8 @@ void Cmd() {
         }
     } else if (reconhece(SN, ABRECHAVES)) {
         novoToken();
-        printf("OI 1 - %d \n", tpos);
         while (!reconhece(SN, FECHACHAVES)) {
             Cmd();
-            imprimirToken(tpos);
             novoToken();
         }
         //novoToken();
@@ -321,7 +322,6 @@ void Cmd() {
 }
 
 void Se() {
-    printf("OI 2 - %d \n", tpos);
     int result, label;
     if (reconhece(SN, ABREPARENTESES)) {
         novoToken();
@@ -470,8 +470,17 @@ int Resto(int primOp) {
     result = primOp;
     while (reconhece(SN, ADICAO) || reconhece(SN, SUBTRACAO) || reconhece(SN, OR)) {
         if (reconhece(SN, OR)) salva = tokens[tpos];
-        novoToken();
-        segunOp = Termo();
+
+        if(reconhece(SN, ADICAO)){
+            novoToken();
+            segunOp = Termo();
+            ADD();
+        }
+        if(reconhece(SN, SUBTRACAO)){
+            novoToken();
+            segunOp = Termo();
+            SUB();
+        }
         if (salva.codigo == OR) tmpResult = BOOLEANO;
         else if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
         else if (primOp == REALCON && segunOp == REALCON) tmpResult = REALCON;
@@ -489,8 +498,16 @@ int Sobra(int primOp) {
     result = primOp;
     while (reconhece(SN, MULTIPLICACAO) || reconhece(SN, DIVISAO) || reconhece(SN, AND)) {
         if (reconhece(SN, OR)) salva = tokens[tpos];
-        novoToken();
-        segunOp = Fator();
+        if(reconhece(SN, MULTIPLICACAO)){
+            novoToken();
+            segunOp = Termo();
+            MUL();
+        }
+        if(reconhece(SN, DIVISAO)){
+            novoToken();
+            segunOp = Termo();
+            DIV();
+        }
         if (salva.codigo == OR) tmpResult = BOOLEANO;
         else if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
         else if (primOp == REALCON && segunOp == REALCON) tmpResult = REALCON;
