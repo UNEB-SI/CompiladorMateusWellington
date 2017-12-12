@@ -17,6 +17,7 @@ int analisadorCodigo() {
 
 /*Gramatica de Programa*/
 void Prog() {
+    size = 0;
     funretorno = 0;
     CelulaTabela celulaTabela;
     while (faltaToken()) {
@@ -28,7 +29,7 @@ void Prog() {
                 if (!reconheceID()) erro(AS_FALTAID);
                 celulaTabela = consultar(tokens[tpos].lexema);
                 if (celulaTabela.tipo != -1) erro(ASEM_DECLFUNIGUAL);
-                inserir(tipo, tokens[tpos].lexema, ZOMBIE, GLOBAL, tokens[tpos].linha + 1);
+                inserir(tipo, tokens[tpos].lexema, ZOMBIE, GLOBAL, tokens[tpos].linha + 1, -1);
                 novoToken();
                 if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
                 novoToken();
@@ -41,7 +42,7 @@ void Prog() {
                         if (!reconheceID()) erro(AS_FALTAID);
                         celulaTabela = consultar(tokens[tpos].lexema);
                         if (celulaTabela.tipo != -1) erro(ASEM_DECLFUNIGUAL);
-                        inserir(tipo, tokens[tpos].lexema, ZOMBIE, GLOBAL, tokens[tpos].linha + 1);
+                        inserir(tipo, tokens[tpos].lexema, ZOMBIE, GLOBAL, tokens[tpos].linha + 1, -1);
                         novoToken();
                         if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
                         novoToken();
@@ -54,6 +55,8 @@ void Prog() {
                 novoToken();
             } else erro(AS_ERRO);
         } else if (reconhece(PR, SEMRETORNO)) {
+            if (size > 0) AMEM(size);
+            size = 0;
             atualizaTipo();
             novoToken();
             if (!reconheceID()) erro(AS_FALTAID);
@@ -61,7 +64,7 @@ void Prog() {
             celulaTabela = consultar(tauxfun.lexema);
             if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLFUNIGUAL);
             else if (celulaTabela.tipo != -1 && celulaTabela.tipo != tipo) erro(ASEM_DECLTIPORETDIFERENTE);
-            inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1);
+            inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1, -1);
             novoToken();
             if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
             Funcao();
@@ -73,42 +76,43 @@ void Prog() {
             taux = tokens[tpos];
             novoToken();
             if (reconhece(SN, ABREPARENTESES)) {
+                if (size > 0) AMEM(size);
                 tauxfun = tokens[tpos-1];
                 celulaTabela = consultar(tauxfun.lexema);
                 if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLFUNIGUAL);
                 else if (celulaTabela.tipo != -1 && celulaTabela.tipo != tipo) erro(ASEM_DECLTIPORETDIFERENTE);
-                inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1);
+                inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1, -1);
                 Funcao();
                 //Função com tipo precisa de retorno
                 if (funretorno != 1) erro(ASEM_RETORNARFUNCAO);
                 excluirLocais();
             } else if (reconhece(SN, VIRGULA)) {
+                size++;
                 celulaTabela = consultar(taux.lexema);
                 if (celulaTabela.tipo != - 1) erro(ASEM_DECLVARIGUAL);
-                inserir(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1);
+                inserir(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1, -1);
                 while (reconhece(SN, VIRGULA)) {
+                    size++;
                     novoToken();
                     if (!reconheceID()) erro(AS_FALTAID);
                     celulaTabela = consultar(tokens[tpos].lexema);
                     if (celulaTabela.tipo != -1) erro(ASEM_DECLVARIGUAL);
-                    inserir(tipo, tokens[tpos].lexema, !ZOMBIE, GLOBAL, tokens[tpos].linha + 1);
+                    inserir(tipo, tokens[tpos].lexema, !ZOMBIE, GLOBAL, tokens[tpos].linha + 1, -1);
                     novoToken();
                 }
                 if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
                 novoToken();
             } else if (reconhece(SN, PONTOEVIRGULA)) {
+                size++;
                 celulaTabela = consultar(taux.lexema);
                 if (celulaTabela.tipo != - 1) erro(ASEM_DECLVARIGUAL);
-                inserir(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1);
+                inserir(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1, -1);
                 novoToken();
             } else {
                 erro(AS_FALTAPONTOEVIRGULA);
             }
         } else {loop++;}
-        if (loop > 10) {
-            novoToken();
-            //erro(ERRO_INTERNO);
-        }
+        if (loop > 10) { erro(ERRO_INTERNO);    }
     }
     HALT();
 }
@@ -131,22 +135,22 @@ void Funcao() {
             if (!reconheceID()) erro(AS_FALTAID);
             celulaTabela = consultar(tokens[tpos].lexema);
             if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLVARIGUAL);
-            inserir(tipo, tokens[tpos].lexema, 0, LOCAL, tokens[tpos].linha + 1);
+            inserir(tipo, tokens[tpos].lexema, 0, LOCAL, tokens[tpos].linha + 1, decl);
             novoToken();
+            decl++;
             while (1) {
                 if (reconhece(SN, VIRGULA)) {
                     novoToken();
                     if (!reconheceID()) erro(AS_FALTAID);
                     celulaTabela = consultar(tokens[tpos].lexema);
                     if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLVARIGUAL);
-                    inserir(tipo, tokens[tpos].lexema, !ZOMBIE, LOCAL, tokens[tpos].linha + 1);
+                    inserir(tipo, tokens[tpos].lexema, !ZOMBIE, LOCAL, tokens[tpos].linha + 1, decl);
                     novoToken();
                     decl++;
                 } else break;
             }
             if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
             novoToken();
-            decl++;
         } else break;
     }
     AMEM(decl);
@@ -192,10 +196,11 @@ void TipoParam() {
         }
         novoToken();
         if (!reconheceID()) erro(AS_FALTAID);
-        inserir(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, tokens[tpos].linha + 1);
+        inserir(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, tokens[tpos].linha + 1, -1);
         novoToken();
         while (1) {
-            LOAD(tokens[tpos]);
+            celulaTabela = consultar(tokens[tpos].lexema);
+            LOAD(celulaTabela);
             if (reconhece(SN, VIRGULA)) {
                 novoToken();
                 if (!Tipo()) erro(AS_ERRO);
@@ -212,7 +217,7 @@ void TipoParam() {
                 if (!reconheceID()) erro(AS_ERRO);
                 celulaTabela = consultar(tokens[tpos].lexema);
                 if (celulaTabela.tipo != -1 && celulaTabela.zombie) erro(ASEM_DECLVARIGUAL);
-                inserir(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, tokens[tpos].linha + 1);
+                inserir(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, tokens[tpos].linha + 1, -1);
                 novoToken();
             } else {
                 retornarToken();
@@ -231,7 +236,7 @@ void TipoParamOpc() {
     } else if (Tipo()) {
         atualizaTipo();
         novoToken();
-        inserir(tipo, "", ZOMBIE, LOCAL, tokens[tpos].linha + 1);
+        inserir(tipo, "", ZOMBIE, LOCAL, tokens[tpos].linha + 1, -1);
         if (reconheceID()) novoToken();
         while (1) {
             if (reconhece(SN, VIRGULA)) {
@@ -239,7 +244,7 @@ void TipoParamOpc() {
                 if (!Tipo()) erro(AS_ERRO);
                 atualizaTipo();
                 novoToken();
-                inserir(tipo, "", ZOMBIE, LOCAL, tokens[tpos].linha + 1);
+                inserir(tipo, "", ZOMBIE, LOCAL, tokens[tpos].linha + 1, -1);
                 if (reconheceID()) novoToken();
             } else break;
         }
@@ -275,7 +280,8 @@ void Cmd() {
             else if (tipo == BOOLEANO && (result != BOOLEANO && result != INTCON)) erro(ASEM_ATRIBUICAO);
             else if (tipo == -1) erro(ASEM_ATRIBUICAO);
             if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
-            STOR(taux);
+            CelulaTabela celulaTabela = consultar(taux.lexema);
+            STOR(celulaTabela);
         } else {
             if (reconhece(SN, ABREPARENTESES)) {
                 celulaTabela = consultar(taux.lexema);
@@ -424,7 +430,8 @@ int Atrib() {
                 if (!isInteger(result)) erro(ASEM_ATRIBUICAO);
             } else if (tipo == REALCON) {
             } else erro(ASEM_ATRIBUICAO);
-            STOR(taux);
+            CelulaTabela celulaTabela = consultar(taux.lexema);
+            STOR(celulaTabela);
             return 1;
         } else {
             retornarToken();
@@ -466,7 +473,7 @@ int Termo() {
 
 int Resto(int primOp) {
     Token salva;
-    int segunOp, tmpResult = 0, result;
+    int segunOp = 0, tmpResult = 0, result;
     result = primOp;
     while (reconhece(SN, ADICAO) || reconhece(SN, SUBTRACAO) || reconhece(SN, OR)) {
         if (reconhece(SN, OR)) salva = tokens[tpos];
@@ -494,7 +501,7 @@ int Resto(int primOp) {
 
 int Sobra(int primOp) {
     Token salva;
-    int segunOp, tmpResult = 0, result;
+    int segunOp = 0, tmpResult = 0, result;
     result = primOp;
     while (reconhece(SN, MULTIPLICACAO) || reconhece(SN, DIVISAO) || reconhece(SN, AND)) {
         if (reconhece(SN, OR)) salva = tokens[tpos];
@@ -522,7 +529,7 @@ int Sobra(int primOp) {
 int Fator() {
     Token salvar;
     CelulaTabela celulaTabela;
-    int result, pos = 0;
+    int result = -1, pos = 0;
     if (tokens[tpos].categoria == INTCON ||
         tokens[tpos].categoria == REALCON ||
             (tokens[tpos].categoria == CT_C && tokens[tpos].lexema != "!")||
@@ -567,7 +574,7 @@ int Fator() {
         } else {
             retornarToken();
             celulaTabela = consultar(tokens[tpos].lexema);
-            LOAD(tokens[tpos]);
+            LOAD(celulaTabela);
             novoToken();
             result = celulaTabela.tipo;
         }

@@ -1,6 +1,6 @@
 #include "../include/gerenciador.h"
 
-void inserir(int tipo, char lexema[], int zombie, int escopo, int linha) {
+void inserir(int tipo, char lexema[], int zombie, int escopo, int linha, int pos) {
 	if(topo == 0){
 		memset(tabela, 0, DIM);
 	}
@@ -9,6 +9,13 @@ void inserir(int tipo, char lexema[], int zombie, int escopo, int linha) {
 	tabela[topo].escopo = escopo;
     tabela[topo].zombie = zombie;
     tabela[topo].linha = linha;
+    char buffer[10];
+    sprintf(buffer, "%d", escopo);
+    strcpy(tabela[topo].posicao, buffer);
+    strcpy(buffer, "");
+    sprintf(buffer, "%d", ++pos);
+    strcat(tabela[topo].posicao, ",");
+    strcat(tabela[topo].posicao, buffer);
 	topo++;
 }
 

@@ -1,10 +1,17 @@
-/* ---------------  TOTALLY USELESS TEST PROGRAM ---------------- */
+/* Sequencia de Fibonacci em Cmm - Recursivo */
 
-inteiro x;
+prototipo inteiro fibonacci(inteiro);
 
-semretorno PRINCIPAL(semparam){
-    inteiro NUMERO,i;
-    inteiro A,B,C;
+semretorno principal(semparam) {
+
+     inteiro i, n, x, y;
+
+     se (1) {
+     }
+     x=y+3;;;;;;;
+
+     para (i=0; i<n; i=i+1){
+
+     }
+     retorne;
 }
-
-

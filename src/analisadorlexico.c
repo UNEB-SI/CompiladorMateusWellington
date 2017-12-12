@@ -146,8 +146,10 @@ int analisadorLexico(FILE *file) {
                 break;
             case 12:
                 c = (char) getc(file);
-                while (isalpha(c) || c == '_' ||
-                       c == ' ' || c == '\n' || c == ':') {
+                while ((isprint(c) || c == '_' ||
+                       c == ' ' || c == '\n' || c == ':') && c != '\"') {
+                    //printf("OI");
+                    //putchar(c);
                     strcat(caux, &c);
                     c = (char) getc(file);
                 }

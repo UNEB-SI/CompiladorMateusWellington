@@ -18,8 +18,8 @@ void configurarPilha(FILE *arq);
 void PUSH(Token tk);
 void POP();
 void COPY();
-void STOR(Token tk);
-void LOAD(Token tk);
+void STOR(CelulaTabela celulaTabela);
+void LOAD(CelulaTabela celulaTabela);
 /*Valores Inteiros*/
 void ADD();
 void SUB();

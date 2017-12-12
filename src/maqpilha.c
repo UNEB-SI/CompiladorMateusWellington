@@ -16,16 +16,16 @@ void PUSH(Token tk) {
     fwrite(str, 1, sizeof(str), file);
 }
 
-void STOR(Token tk) {
+void STOR(CelulaTabela celulaTabela) {
     char str[20] = "STOR ";
-    strcat(str, tk.lexema);
+    strcat(str, celulaTabela.posicao);
     strcat(str, "\n");
     fwrite(str, 1, sizeof(str), file);
 }
 
-void LOAD(Token tk){
+void LOAD(CelulaTabela celulaTabela){
     char str[20] = "LOAD ";
-    strcat(str, tk.lexema);
+    strcat(str, celulaTabela.posicao);
     strcat(str, "\n");
     fwrite(str, 1, sizeof(str), file);
 }
