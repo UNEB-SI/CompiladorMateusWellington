@@ -60,21 +60,21 @@ void SUB() {
 }
 
 void MULF() {
-    char* str = "MUL\n";
+    char* str = "MULF \n";
     fwrite(str, 1, sizeof(str), file);
 }
 
 void DIVF() {
-    char* str = "DIV\n";
+    char* str = "DIVF \n";
     fwrite(str, 1, sizeof(str), file);
 }
 
 void ADDF() {
-    char* str = "ADD\n";
+    char* str = "ADDF \n";
     fwrite(str, 1, sizeof(str), file);
 }
 void SUBF() {
-    char* str = "SUB\n";
+    char* str = "SUBF \n";
     fwrite(str, 1, sizeof(str), file);
 }
 

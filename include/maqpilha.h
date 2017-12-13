@@ -26,10 +26,10 @@ void SUB();
 void MUL();
 void DIV();
 /*Valores Reais*/
-void ADD();
-void SUB();
-void MUL();
-void DIV();
+void ADDF();
+void SUBF();
+void MULF();
+void DIVF();
 
 int tDeclarados, tUsados;
 int gerarLabel();

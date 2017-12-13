@@ -1,16 +1,7 @@
-/* Sequencia de Fibonacci em Cmm - Recursivo */
+prototipo semretorno principal(inteiro);
 
-prototipo inteiro fibonacci(inteiro);
-
-semretorno principal(semparam) {
-     inteiro i, n, x, y;
-     i = 0;
-}
-
-inteiro fibonacci(inteiro ig) {
-    inteiro x, n, y;
-
-    se(!(n)){
-        retorne n;
-    }
+semretorno principal(inteiro a){
+inteiro z;
+real u;
+u = 3.4 - 1.3 / 2.7;
 }
