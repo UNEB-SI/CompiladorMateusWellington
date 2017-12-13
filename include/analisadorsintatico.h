@@ -12,7 +12,6 @@
 
 extern Token *tokens;
 extern int tkpos;
-FILE *codigo;
 int tpos, tipo, loop, funretorno, size;
 Token taux, tauxfun;
 

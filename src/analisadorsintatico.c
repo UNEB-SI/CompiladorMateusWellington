@@ -6,18 +6,16 @@
 #include "../include/maqpilha.h"
 
 int analisadorCodigo() {
-    codigo = fopen("codigo.cmp", "w+");
-    configurarPilha(codigo);
+    configurarPilha();
     tpos = 0; loop = 0; tipo = -1;
     Prog();
-    mostrarTabela();
-    fclose(codigo);
+    excluirPilha();
     return 1;
 }
 
 /*Gramatica de Programa*/
 void Prog() {
-    size = 0;
+    int decl = 0;
     funretorno = 0;
     CelulaTabela celulaTabela;
     while (faltaToken()) {
@@ -55,8 +53,8 @@ void Prog() {
                 novoToken();
             } else erro(AS_ERRO);
         } else if (reconhece(PR, SEMRETORNO)) {
-            if (size > 0) AMEM(size);
-            size = 0;
+            if (decl > 0) AMEM(decl);
+            decl = 0;
             atualizaTipo();
             novoToken();
             if (!reconheceID()) erro(AS_FALTAID);
@@ -75,22 +73,23 @@ void Prog() {
             taux = tokens[tpos];
             novoToken();
             if (reconhece(SN, ABREPARENTESES)) {
-                if (size > 0) AMEM(size);
+                if (decl > 0) AMEM(decl);
                 tauxfun = tokens[tpos-1];
                 celulaTabela = consultar(tauxfun.lexema);
                 if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLFUNIGUAL);
                 else if (celulaTabela.tipo != -1 && celulaTabela.tipo != tipo) erro(ASEM_DECLTIPORETDIFERENTE);
                 inserir(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1, -1);
+                AMEM(1);
                 Funcao();
                 //Função com tipo precisa de retorno
                 if (funretorno != 1) erro(ASEM_RETORNARFUNCAO);
             } else if (reconhece(SN, VIRGULA)) {
-                size++;
+                size++; decl++;
                 celulaTabela = consultar(taux.lexema);
                 if (celulaTabela.tipo != - 1) erro(ASEM_DECLVARIGUAL);
-                inserir(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1, -1);
+                inserir(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1, size);
                 while (reconhece(SN, VIRGULA)) {
-                    size++;
+                    size++; decl++;
                     novoToken();
                     if (!reconheceID()) erro(AS_FALTAID);
                     celulaTabela = consultar(tokens[tpos].lexema);
@@ -101,7 +100,7 @@ void Prog() {
                 if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
                 novoToken();
             } else if (reconhece(SN, PONTOEVIRGULA)) {
-                size++;
+                decl++;
                 celulaTabela = consultar(taux.lexema);
                 if (celulaTabela.tipo != - 1) erro(ASEM_DECLVARIGUAL);
                 inserir(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1, -1);
@@ -163,6 +162,7 @@ void Funcao() {
     if (!reconhece(SN, FECHACHAVES)) erro(AS_FALTACHAVES);
     novoToken();
     excluirLocais();
+    DMEM(decl);
 }
 
 /*Gramatica de Tipo*/
@@ -453,9 +453,7 @@ int Expr() {
         if ((result == INTCON || result == REALCON || result == CT_C || result == BOOLEANO) &&
                 (segundoOp == INTCON || segundoOp == REALCON || segundoOp == CT_C || segundoOp == BOOLEANO))
             result = BOOLEANO;
-        else {
-            erro(ASEM_ATRIBUICAO);
-        }
+        else erro(ASEM_ATRIBUICAO);
         pushtk = tokens[tpos];
         if (operacao == IGUAL) {
             SUB();
@@ -527,17 +525,23 @@ int Resto(int primOp) {
             novoToken();
             segunOp = Termo();
             salva = tokens[tpos];
-        }
+        } else if(reconhece(SN, ADICAO) ){
+            novoToken();
+            segunOp = Termo();
+            if((primOp == REALCON && segunOp == REALCON)){
+                ADDF();
+            }else{
+                ADD();
+            }
 
-        if(reconhece(SN, ADICAO)){
+        } else if(reconhece(SN, SUBTRACAO)){
             novoToken();
             segunOp = Termo();
-            ADD();
-        }
-        if(reconhece(SN, SUBTRACAO)){
-            novoToken();
-            segunOp = Termo();
-            SUB();
+            if((primOp == REALCON && segunOp == REALCON)){
+                SUBF();
+            }else{
+                SUB();
+            }
         }
         if (salva.codigo == OR) tmpResult = BOOLEANO;
         else if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
@@ -560,14 +564,23 @@ int Sobra(int primOp) {
             novoToken();
             segunOp = Termo();
             salva = tokens[tpos];
-        } else if(reconhece(SN, MULTIPLICACAO)){
+        } else if(reconhece(SN, MULTIPLICACAO) ){
             novoToken();
             segunOp = Termo();
-            MUL();
+            if((primOp == REALCON && segunOp == REALCON)){
+                MULF();
+            }else{
+                MUL();
+            }
+
         } else if(reconhece(SN, DIVISAO)){
             novoToken();
             segunOp = Termo();
-            DIV();
+            if((primOp == REALCON && segunOp == REALCON)){
+                DIVF();
+            }else{
+                DIV();
+            }
         }
         if (salva.codigo == OR) tmpResult = BOOLEANO;
         else if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;

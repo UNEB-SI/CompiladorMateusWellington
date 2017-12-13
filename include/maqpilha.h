@@ -14,7 +14,8 @@ float pilha[DIM];
 int topoPilha;
 FILE *file;
 
-void configurarPilha(FILE *arq);
+void configurarPilha();
+void excluirPilha();
 void PUSH(Token tk);
 void POP();
 void COPY();
@@ -26,10 +27,10 @@ void SUB();
 void MUL();
 void DIV();
 /*Valores Reais*/
-void ADD();
-void SUB();
-void MUL();
-void DIV();
+void ADDF();
+void SUBF();
+void MULF();
+void DIVF();
 
 int tDeclarados, tUsados;
 int gerarLabel();
@@ -38,7 +39,7 @@ void LABEL(int label);
 void GOTO(int label);
 void GOFALSE(int label);
 void GOTRUE(int label);
-
+void DMEM(int size);
 void AMEM(int size);
 
 void HALT();
