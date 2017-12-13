@@ -68,7 +68,6 @@ void Prog() {
             novoToken();
             if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
             Funcao();
-            excluirLocais();
         } else if (Tipo()) {
             atualizaTipo();
             novoToken();
@@ -85,7 +84,6 @@ void Prog() {
                 Funcao();
                 //Função com tipo precisa de retorno
                 if (funretorno != 1) erro(ASEM_RETORNARFUNCAO);
-                excluirLocais();
             } else if (reconhece(SN, VIRGULA)) {
                 size++;
                 celulaTabela = consultar(taux.lexema);
@@ -164,6 +162,7 @@ void Funcao() {
     }
     if (!reconhece(SN, FECHACHAVES)) erro(AS_FALTACHAVES);
     novoToken();
+    excluirLocais();
 }
 
 /*Gramatica de Tipo*/
@@ -186,9 +185,8 @@ void TipoParam() {
     if (reconhece(PR, SEMPARAM)) {
         celulaTabela = consultar2(tauxfun.lexema);
         if (celulaTabela.tipo != -1 && celulaTabela.zombie == ZOMBIE) {
-            //celulaTabela = consultarTipoParametro(tauxfun.lexema, posParam);
+            celulaTabela = consultarTipoParametro(tauxfun.lexema, posParam);
             if (celulaTabela.tipo != -1 && celulaTabela.tipo != SEMPARAM) erro(ASEM_DECLTIPODIFERENTE);
-            else if (celulaTabela.tipo == -1) erro(ASEM_DECLTIPODIFERENTE);
         }
     } else if (Tipo()) {
         posParam++;
@@ -286,7 +284,7 @@ void Cmd() {
             else if (tipo == BOOLEANO && (result != BOOLEANO && result != INTCON)) erro(ASEM_ATRIBUICAO);
             else if (tipo == -1) erro(ASEM_ATRIBUICAO);
             if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
-            CelulaTabela celulaTabela = consultar(taux.lexema);
+            celulaTabela = consultar(taux.lexema);
             STOR(celulaTabela);
         } else {
             if (reconhece(SN, ABREPARENTESES)) {
@@ -424,24 +422,21 @@ void Retorne() {
 /*Gramatica de Atribuição*/
 int Atrib() {
     float result;
-    if (tokens[tpos].categoria == ID) {
+    if (reconheceID()) {
         taux = tokens[tpos];
         novoToken();
-        if (tokens[tpos].categoria == SN &&
-            tokens[tpos].codigo == ATRIBUICAO) {
-            novoToken();
-            result = Expr();
-            tipo = consultar(taux.lexema).tipo;
-            if (tipo == INTCON) {
-                if (!isInteger(result)) erro(ASEM_ATRIBUICAO);
-            } else if (tipo == REALCON) {
-            } else erro(ASEM_ATRIBUICAO);
-            CelulaTabela celulaTabela = consultar(taux.lexema);
-            STOR(celulaTabela);
-            return 1;
-        } else {
-            retornarToken();
-        }
+        if (!reconhece(SN, ATRIBUICAO)) erro(AS_PARA);
+        novoToken();
+        result = Expr();
+        tipo = consultar(taux.lexema).tipo;
+        if (tipo == INTCON && (result != INTCON && result != CT_C)) erro(ASEM_ATRIBUICAO);
+        else if (tipo == CT_C && (result != INTCON && result != CT_C)) erro(ASEM_ATRIBUICAO);
+        else if (tipo == REALCON && result != REALCON) erro(ASEM_ATRIBUICAO);
+        else if (tipo == BOOLEANO && (result != BOOLEANO && result != INTCON)) erro(ASEM_ATRIBUICAO);
+        else if (tipo == -1) erro(ASEM_ATRIBUICAO);
+        CelulaTabela celulaTabela = consultar(taux.lexema);
+        STOR(celulaTabela);
+        return 1;
     }
     return 0;
 }
@@ -458,7 +453,9 @@ int Expr() {
         if ((result == INTCON || result == REALCON || result == CT_C || result == BOOLEANO) &&
                 (segundoOp == INTCON || segundoOp == REALCON || segundoOp == CT_C || segundoOp == BOOLEANO))
             result = BOOLEANO;
-        else erro(ASEM_ATRIBUICAO);
+        else {
+            erro(ASEM_ATRIBUICAO);
+        }
         pushtk = tokens[tpos];
         if (operacao == IGUAL) {
             SUB();
@@ -526,7 +523,11 @@ int Resto(int primOp) {
     int segunOp = 0, tmpResult = 0, result;
     result = primOp;
     while (reconhece(SN, ADICAO) || reconhece(SN, SUBTRACAO) || reconhece(SN, OR)) {
-        if (reconhece(SN, OR)) salva = tokens[tpos];
+        if (reconhece(SN, OR)) {
+            novoToken();
+            segunOp = Termo();
+            salva = tokens[tpos];
+        }
 
         if(reconhece(SN, ADICAO)){
             novoToken();
@@ -543,6 +544,7 @@ int Resto(int primOp) {
         else if (primOp == REALCON && segunOp == REALCON) tmpResult = REALCON;
         else if (primOp == CT_C && segunOp == CT_C) tmpResult = CT_C;
         else if ((primOp == INTCON && segunOp == CT_C) || (primOp == CT_C && segunOp == INTCON)) tmpResult = INTCON;
+        else if (primOp == BOOLEANO && segunOp == BOOLEANO) tmpResult = BOOLEANO;
         else erro(ASEM_ATRIBUICAO);
         result = Resto(tmpResult);
     }
@@ -554,13 +556,15 @@ int Sobra(int primOp) {
     int segunOp = 0, tmpResult = 0, result;
     result = primOp;
     while (reconhece(SN, MULTIPLICACAO) || reconhece(SN, DIVISAO) || reconhece(SN, AND)) {
-        if (reconhece(SN, OR)) salva = tokens[tpos];
-        if(reconhece(SN, MULTIPLICACAO)){
+        if (reconhece(SN, AND)) {
+            novoToken();
+            segunOp = Termo();
+            salva = tokens[tpos];
+        } else if(reconhece(SN, MULTIPLICACAO)){
             novoToken();
             segunOp = Termo();
             MUL();
-        }
-        if(reconhece(SN, DIVISAO)){
+        } else if(reconhece(SN, DIVISAO)){
             novoToken();
             segunOp = Termo();
             DIV();
@@ -570,6 +574,7 @@ int Sobra(int primOp) {
         else if (primOp == REALCON && segunOp == REALCON) tmpResult = REALCON;
         else if (primOp == CT_C && segunOp == CT_C) tmpResult = CT_C;
         else if ((primOp == INTCON && segunOp == CT_C) || (primOp == CT_C && segunOp == INTCON)) tmpResult = INTCON;
+        else if (primOp == BOOLEANO && segunOp == BOOLEANO) tmpResult = BOOLEANO;
         else erro(ASEM_ATRIBUICAO);
         result = Sobra(tmpResult);
     }
@@ -636,7 +641,7 @@ int Fator() {
     } else if (reconhece(SN, NOT)) {
         novoToken();
         result = Fator();
-        if (result == INTCON || result == REALCON || result == CT_C) result = BOOLEANO;
+        if (result == INTCON || result == REALCON || result == CT_C || result == BOOLEANO) result = BOOLEANO;
         else erro(ASEM_ATRIBUICAO);
         salvar = tokens[tpos];
         GOFALSE(pegarLabel());

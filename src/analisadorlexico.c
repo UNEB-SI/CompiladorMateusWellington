@@ -115,7 +115,7 @@ int analisadorLexico(FILE *file) {
                 break;
             case 9:
                 c = (char) getc(file);
-                if (islower(c) || isupper(c) || isdigit(c)) {
+                if (isprint(c)) {
                     strcat(caux, &c);
                     estado = 10;
                 } else if (c == '\\' ) {
@@ -167,12 +167,10 @@ int analisadorLexico(FILE *file) {
                 estado = 0;
                 break;
             case 14:
-                strcat(caux, &c);
                 c = (char) getc(file);
                 if (c == '*') {
-                    strcat(caux, &c);
                     estado = 15;
-                } else if (c != '/'){
+                } else {
                     ungetc(c, file);
                     estado = 46;
                 }
@@ -198,13 +196,12 @@ int analisadorLexico(FILE *file) {
                 ungetc(c, file);
                 break;
             case 16:
-                strcat(caux, &c);
                 c = (char) getc(file);
                 if (c == '/' ) {
-                    strcat(caux, &c);
                     estado = 17;
                 } else {
-                    logErro(AL_CARACINVALIDO, 1, linha);
+                    ungetc(c, file);
+                    estado = 15;
                 }
                 break;
             case 17: //ESTADODEACEITACAO COMENTARIO
@@ -409,7 +406,7 @@ int analisadorLexico(FILE *file) {
                 estado = 0;
                 break;
             case 46: //ESTADODEACEITACAO DIVISAO
-                printf("%s", caux);
+                printf("/");
                 criarToken(SN, caux, DIVISAO);
                 estado = 0;
                 break;
@@ -425,7 +422,7 @@ int analisadorLexico(FILE *file) {
                 break;
             case 48: //ESTADODEACEITACAO VIRGULA
                 printf("%s", caux);
-                criarToken(SN, caux, VIRGULA);
+                criarToken(SN, "/", VIRGULA);
                 estado = 0;
                 break;
             case 49: //ESTADODEACEITACAO PONTO E VIRGULA
@@ -455,7 +452,6 @@ void analisePRouID(char valor[]) {
         }
     }
 
-    printf("  %d  ", resultado);
     if (resultado != -1) {
         criarToken(PR, valor, resultado);
     } else {

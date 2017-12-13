@@ -1,16 +1,38 @@
-/* Sequencia de Fibonacci em Cmm - Recursivo */
+inteiro a, b, c;
 
-prototipo inteiro fibonacci(inteiro);
+real d45;
 
-semretorno principal(semparam) {
-     inteiro i, n, x, y;
-     i = 0;
+booleano FIM;
+
+
+/* Comentario */
+
+caracter d;
+
+prototipo inteiro contagem(inteiro, real, booleano);
+
+prototipo semretorno soma(semparam);
+
+semretorno soma(semparam) {
+    inteiro f, e, x;
+    x=f+e;
 }
 
-inteiro fibonacci(inteiro ig) {
-    inteiro x, n, y;
+inteiro contagem(inteiro a, real b, booleano c){
+    retorne a;
+}
 
-    se(!(n)){
-        retorne n;
+prototipo inteiro sqrt(inteiro);
+semretorno principal(semparam) {
+    inteiro i, x, t, y, delta, x1, x2, x3;
+    se (a>b) {
+      a=b / 5;
     }
+
+    enquanto ((c<=d) && (x>2)) t=t+1;
+    para (x=1; x<y+100; x=x+2) i=i+10;
+
+    x1= (-b + sqrt(delta))/2*a;
+    x2= (-b - sqrt(delta))/2*a;
+    se ((x1==x2) || (x1>x2) || ((x1>=x3) && (!(x1!=x2)))) i = 1;
 }
