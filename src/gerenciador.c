@@ -51,7 +51,7 @@ CelulaTabela consultar(char lexema[]) {
     CelulaTabela cedula;
     cedula.tipo = -1;
     int aux;
-    for (aux = 0; aux < topo + 1; aux++) {
+    for (aux = 0; aux < topo; aux++) {
         if (strcmp(tabela[aux].lexema, lexema) == 0) {
             cedula = tabela[aux];
             if (cedula.zombie != ZOMBIE) break;
@@ -64,7 +64,7 @@ CelulaTabela consultar2(char lexema[]) {
     CelulaTabela cedula;
     cedula.tipo = -1;
     int aux;
-    for (aux = 0; aux < topo + 1; aux++) {
+    for (aux = 0; aux < topo; aux++) {
         if (strcmp(tabela[aux].lexema, lexema) == 0) {
             cedula = tabela[aux];
             break;

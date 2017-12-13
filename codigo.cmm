@@ -3,15 +3,14 @@
 prototipo inteiro fibonacci(inteiro);
 
 semretorno principal(semparam) {
-
      inteiro i, n, x, y;
+     i = 0;
+}
 
-     se (1) {
-     }
-     x=y+3;;;;;;;
+inteiro fibonacci(inteiro ig) {
+    inteiro x, n, y;
 
-     para (i=0; i<n; i=i+1){
-
-     }
-     retorne;
+    se(!(n)){
+        retorne n;
+    }
 }

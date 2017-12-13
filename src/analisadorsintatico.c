@@ -184,6 +184,12 @@ void TipoParam() {
     int posParam = 0;
     CelulaTabela celulaTabela;
     if (reconhece(PR, SEMPARAM)) {
+        celulaTabela = consultar2(tauxfun.lexema);
+        if (celulaTabela.tipo != -1 && celulaTabela.zombie == ZOMBIE) {
+            //celulaTabela = consultarTipoParametro(tauxfun.lexema, posParam);
+            if (celulaTabela.tipo != -1 && celulaTabela.tipo != SEMPARAM) erro(ASEM_DECLTIPODIFERENTE);
+            else if (celulaTabela.tipo == -1) erro(ASEM_DECLTIPODIFERENTE);
+        }
     } else if (Tipo()) {
         posParam++;
         atualizaTipo();
@@ -442,15 +448,59 @@ int Atrib() {
 
 /*Gramatica de Expressões*/
 int Expr() {
-    int result, segundoOp;
+    Token pushtk;
+    int result, segundoOp, operacao;
     result = ExprSimp();
-    if (OpRel()) {
+    operacao = OpRel();
+    if (operacao != 0) {
         novoToken();
         segundoOp = Expr();
         if ((result == INTCON || result == REALCON || result == CT_C || result == BOOLEANO) &&
                 (segundoOp == INTCON || segundoOp == REALCON || segundoOp == CT_C || segundoOp == BOOLEANO))
             result = BOOLEANO;
         else erro(ASEM_ATRIBUICAO);
+        pushtk = tokens[tpos];
+        if (operacao == IGUAL) {
+            SUB();
+            GOFALSE(pegarLabel());
+            strcpy(pushtk.lexema, "0");
+            PUSH(pushtk);
+            GOTO(pegarLabel());
+            LABEL(gerarLabel());
+            strcpy(pushtk.lexema, "1");
+            PUSH(pushtk);
+            LABEL(gerarLabel());
+        } else if (operacao == DIFERENTE) {
+
+        } else if (operacao == MAIOR) {
+            SUB();
+            GOTRUE(pegarLabel());
+            strcpy(pushtk.lexema, "0");
+            PUSH(pushtk);
+            GOTO(pegarLabel());
+            LABEL(gerarLabel());
+            strcpy(pushtk.lexema, "1");
+            PUSH(pushtk);
+            LABEL(gerarLabel());
+        } else if (operacao == MAIORIGUAL) {
+
+        } else if (operacao == MENOR) {
+            SUB();
+            COPY();
+            GOFALSE(pegarLabel());
+            GOTRUE(pegarLabel());
+            strcpy(pushtk.lexema, "1");
+            PUSH(pushtk);
+            GOTO(pegarLabel());
+            LABEL(gerarLabel());
+            POP();
+            LABEL(gerarLabel());
+            strcpy(pushtk.lexema, "0");
+            PUSH(pushtk);
+            LABEL(gerarLabel());
+        } else if (operacao == MENORIGUAL) {
+
+        }
     } else ;
     return result;
 }
@@ -588,6 +638,15 @@ int Fator() {
         result = Fator();
         if (result == INTCON || result == REALCON || result == CT_C) result = BOOLEANO;
         else erro(ASEM_ATRIBUICAO);
+        salvar = tokens[tpos];
+        GOFALSE(pegarLabel());
+        strcpy(salvar.lexema, "0");
+        PUSH(salvar);
+        GOTO(pegarLabel());
+        LABEL(gerarLabel());
+        strcpy(salvar.lexema, "1");
+        PUSH(salvar);
+        LABEL(gerarLabel());
     } else {
         erro(AS_FALTAEXPREOUNUM);
     }
@@ -597,12 +656,11 @@ int Fator() {
 
 /*Gramatica de Operador Relacional*/
 int OpRel() {
-    if (tokens[tpos].categoria == SN &&
-            (tokens[tpos].codigo == IGUAL || tokens[tpos].codigo == DIFERENTE ||
-                    tokens[tpos].codigo == MENORIGUAL || tokens[tpos].codigo == MENOR ||
-                    tokens[tpos].codigo == MAIORIGUAL || tokens[tpos].codigo == MAIOR))
+    if (reconhece(SN, IGUAL) || reconhece(SN, DIFERENTE) ||
+            reconhece(SN, MENORIGUAL) || reconhece(SN, MENOR) ||
+            reconhece(SN, MAIORIGUAL) || reconhece(SN, MAIOR))
     {
-        return 1;
+        return tokens[tpos].codigo;
     }
     return 0;
 }

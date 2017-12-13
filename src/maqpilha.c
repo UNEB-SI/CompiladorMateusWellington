@@ -16,6 +16,16 @@ void PUSH(Token tk) {
     fwrite(str, 1, sizeof(str), file);
 }
 
+void POP() {
+    char str[10] = "POP\n";
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void COPY() {
+    char str[10] = "COPY\n";
+    fwrite(str, 1, sizeof(str), file);
+}
+
 void STOR(CelulaTabela celulaTabela) {
     char str[20] = "STOR ";
     strcat(str, celulaTabela.posicao);
@@ -104,7 +114,12 @@ void GOFALSE(int label) {
 }
 
 void GOTRUE(int label) {
-
+    char str[20] = "GOTRUE L";
+    char buffer[10];
+    sprintf(buffer, "%d", label);
+    strcat(str, buffer);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
 }
 
 void AMEM(int size) {
