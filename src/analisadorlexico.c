@@ -23,7 +23,7 @@ int analisadorLexico(FILE *file) {
             case 0:
                 c = (char) getc(file);
                 strcpy(caux, "");
-                if (c == '\n' || c == ' ') {
+                if (c == '\n' || c == ' ' || c == 9) {
                     putchar(c);
                     if (c == '\n') {
                         linha++;
@@ -77,7 +77,7 @@ int analisadorLexico(FILE *file) {
                 strcat(caux, &c);
                 c = (char) getc(file);
                 if (isdigit(c)) {
-                    strcat(caux, &c);
+                    //strcat(caux, &c);
                     estado = 5;
                 } else {
                     logErro(AL_CARACINVALIDO, 1, linha);

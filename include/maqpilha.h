@@ -10,16 +10,16 @@
 
 #define DIM 100
 
-float pilha[DIM];
-int topoPilha;
 FILE *file;
 
 void configurarPilha();
 void excluirPilha();
+void INIP();
 void PUSH(Token tk);
 void POP();
 void COPY();
 void STOR(CelulaTabela celulaTabela);
+void STOR2(char* posicao);
 void LOAD(CelulaTabela celulaTabela);
 /*Valores Inteiros*/
 void ADD();
@@ -31,7 +31,6 @@ void ADDF();
 void SUBF();
 void MULF();
 void DIVF();
-
 int tDeclarados, tUsados;
 int gerarLabel();
 int pegarLabel();
@@ -41,7 +40,9 @@ void GOFALSE(int label);
 void GOTRUE(int label);
 void DMEM(int size);
 void AMEM(int size);
-
+void CALL(CelulaTabela celulaTabela);
+void INIPR(int size);
+void RET(int size);
 void HALT();
 
 #endif //COMPILADOR_MAQPILHA_H

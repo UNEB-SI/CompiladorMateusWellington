@@ -12,7 +12,8 @@
 
 extern Token *tokens;
 extern int tkpos;
-int tpos, tipo, loop, funretorno, size;
+int tpos, tipo, loop, funparam,
+        funretorno, sizeVar, label;
 Token taux, tauxfun;
 
 int analisadorCodigo();
@@ -44,7 +45,7 @@ int Tipo();
  * TipoParam → semparam | Tipo Id {VIRGULA Tipo Id}
  */
 
-void TipoParam();
+int TipoParam();
 
 /*Gramatica de TipoParamOpc*/
 /*
@@ -116,6 +117,7 @@ void erro(int erro);
 void atualizaTipo();
 int reconheceID();
 int reconhece(int categoria, int codigo);
-int isInteger(float val);
+void setParametros(int param);
+int getParametros();
 
 #endif //COMPILADOR_ANALISADORSINTATICO_H

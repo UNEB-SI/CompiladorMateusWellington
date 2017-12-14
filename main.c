@@ -13,6 +13,7 @@ int main()
     if (analisadorLexico(file)) {
         fclose(file);
         analisadorCodigo();
+        printf("\nCodigo gerado no arquivo \"codigo.cmp\".\n");
         exit(1);
     }
 

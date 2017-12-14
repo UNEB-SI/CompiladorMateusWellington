@@ -13,6 +13,7 @@ typedef struct tabela {
     int tipo;
     int escopo;
     int linha;
+    int label;
     char posicao[DIM];
 } CelulaTabela;
 
@@ -21,14 +22,14 @@ enum Escopo {GLOBAL, LOCAL};
 CelulaTabela tabela[DIM];
 int topo;
 
-void inserir(int tipo, char* lexema, int zombie, int escopo, int linha, int pos);
-void alterar(char lexema[], int escopo);
-void  alterarFuncao(char lexema[]);
-void alterarParametro(char funcao[], char lexema[], int escopo, int posicao);
+void inserirVar(int tipo, char* lexema, int zombie, int escopo, int linha, int pos);
+void inserirFuncao(int tipo, char* lexema, int zombie, int escopo, int linha, int pos);
+void alterarParamVar(int posParam);
 CelulaTabela consultar(char lexema[]);
-CelulaTabela consultar2(char lexema[]);
+CelulaTabela consultarLocais(char lexema[]);
+CelulaTabela consultarLocaisEGlobais(char lexema[]);
 CelulaTabela consultarTipoParametro(char lexema[], int posicao);
-void excluirLocais();
+void excluirLocais(char* lexema, int param);
 void mostrarTabela();
 
 #endif // GERENCIADOR_H_INCLUDED

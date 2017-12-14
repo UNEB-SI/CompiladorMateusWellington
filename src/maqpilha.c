@@ -12,6 +12,11 @@ void excluirPilha() {
     fclose(file);
 }
 
+void INIP() {
+    char str[6] = "INIP\n";
+    fwrite(str, 1, sizeof(str), file);
+}
+
 void PUSH(Token tk) {
     char str[20] = "PUSH ";
     strcat(str, tk.lexema);
@@ -32,6 +37,13 @@ void COPY() {
 void STOR(CelulaTabela celulaTabela) {
     char str[20] = "STOR ";
     strcat(str, celulaTabela.posicao);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void STOR2(char* posicao) {
+    char str[20] = "STOR ";
+    strcat(str, posicao);
     strcat(str, "\n");
     fwrite(str, 1, sizeof(str), file);
 }
@@ -144,7 +156,32 @@ void AMEM(int size) {
     fwrite(str, 1, sizeof(str), file);
 }
 
+void CALL(CelulaTabela celulaTabela) {
+    char str[20] = "CALL ";
+    strcat(str, celulaTabela.posicao);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void INIPR(int size) {
+    char str[20] = "INIPR ";
+    char buffer[10];
+    sprintf(buffer, "%d", size);
+    strcat(str, buffer);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void RET(int size) {
+    char str[20] = "RET ";
+    char buffer[10];
+    sprintf(buffer, "%d", size);
+    strcat(str, buffer);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
 void HALT() {
-    char* str = "HALT";
+    char str[5] = "HALT";
     fwrite(str, 1, sizeof(str), file);
 }
