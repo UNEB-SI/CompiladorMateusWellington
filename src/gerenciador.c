@@ -1,6 +1,6 @@
 #include "../include/gerenciador.h"
 
-void inserirVar(int tipo, char lexema[], int zombie, int escopo, int linha, int pos) {
+void inserirVar(int tipo, char lexema[], int zombie, int escopo, int pos) {
     if(topo == 0){
         memset(tabela, 0, DIM);
     }
@@ -8,7 +8,6 @@ void inserirVar(int tipo, char lexema[], int zombie, int escopo, int linha, int 
     tabela[topo].tipo = tipo;
     tabela[topo].escopo = escopo;
     tabela[topo].zombie = zombie;
-    tabela[topo].linha = linha;
     char buffer[10];
     sprintf(buffer, "%d", escopo);
     strcpy(tabela[topo].posicao, buffer);
@@ -19,7 +18,7 @@ void inserirVar(int tipo, char lexema[], int zombie, int escopo, int linha, int 
     topo++;
 }
 
-void inserirFuncao(int tipo, char lexema[], int zombie, int escopo, int linha, int pos) {
+void inserirFuncao(int tipo, char lexema[], int zombie, int escopo, int pos) {
     char buffer[10];
     if(topo == 0){
         memset(tabela, 0, DIM);
@@ -28,7 +27,6 @@ void inserirFuncao(int tipo, char lexema[], int zombie, int escopo, int linha, i
     tabela[topo].tipo = tipo;
     tabela[topo].escopo = escopo;
     tabela[topo].zombie = zombie;
-    tabela[topo].linha = linha;
     tabela[topo].label = pos;
     if (pos != -1) {
         strcpy(tabela[topo].posicao, "L");
@@ -151,7 +149,6 @@ void mostrarTabela() {
             default: break;
         }
         if (tabela[i].zombie != 0) printf("\nZombie: TRUE");
-        printf("\nLinha: %d", tabela[i].linha);
         printf("\nPosicao: %s", tabela[i].posicao);
         printf("\n----------------------------");
     }

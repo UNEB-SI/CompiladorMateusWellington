@@ -17,7 +17,16 @@ void INIP() {
     fwrite(str, 1, sizeof(str), file);
 }
 
-void PUSH(Token tk) {
+void PUSH(int val) {
+    char buffer[8];
+    char str[20] = "PUSH ";
+    sprintf(buffer, "%d", val);
+    strcat(str, buffer);
+    strcat(str, "\n");
+    fwrite(str, 1, sizeof(str), file);
+}
+
+void PUSH2(Token tk) {
     char str[20] = "PUSH ";
     strcat(str, tk.lexema);
     strcat(str, "\n");

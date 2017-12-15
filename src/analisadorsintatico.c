@@ -29,7 +29,7 @@ void Prog() {
                 celulaTabela = consultar(tokens[tpos].lexema);
                 if (celulaTabela.tipo != -1) erro(ASEM_DECLFUNIGUAL);
                 gerarLabel();
-                inserirFuncao(tipo, tokens[tpos].lexema, ZOMBIE, GLOBAL, tokens[tpos].linha + 1, pegarLabel());
+                inserirFuncao(tipo, tokens[tpos].lexema, ZOMBIE, GLOBAL, pegarLabel());
                 novoToken();
                 if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
                 novoToken();
@@ -43,7 +43,7 @@ void Prog() {
                         celulaTabela = consultar(tokens[tpos].lexema);
                         if (celulaTabela.tipo != -1) erro(ASEM_DECLFUNIGUAL);
                         gerarLabel();
-                        inserirFuncao(tipo, tokens[tpos].lexema, ZOMBIE, GLOBAL, tokens[tpos].linha + 1, pegarLabel());
+                        inserirFuncao(tipo, tokens[tpos].lexema, ZOMBIE, GLOBAL, pegarLabel());
                         novoToken();
                         if (!reconhece(SN, ABREPARENTESES)) erro(AS_FALTAPARENTESE);
                         novoToken();
@@ -70,10 +70,10 @@ void Prog() {
             GOTO(label);
             if (celulaTabela.tipo != -1) {
                 LABEL(celulaTabela.label);
-                inserirFuncao(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1, celulaTabela.label);
+                inserirFuncao(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, celulaTabela.label);
             } else {
                 LABEL(gerarLabel());
-                inserirFuncao(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1, pegarLabel());
+                inserirFuncao(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, pegarLabel());
             }
             INIPR(1);
             novoToken();
@@ -97,10 +97,10 @@ void Prog() {
                 GOTO(label);
                 if (celulaTabela.tipo != -1) {
                     LABEL(celulaTabela.label);
-                    inserirFuncao(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1, celulaTabela.label);
+                    inserirFuncao(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, celulaTabela.label);
                 } else {
                     LABEL(gerarLabel());
-                    inserirFuncao(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, tauxfun.linha + 1, pegarLabel());
+                    inserirFuncao(tipo, tauxfun.lexema, !ZOMBIE, GLOBAL, pegarLabel());
                 }
                 INIPR(1);
                 Funcao();
@@ -111,14 +111,14 @@ void Prog() {
                 sizeVar++; decl++;
                 celulaTabela = consultar(taux.lexema);
                 if (celulaTabela.tipo != - 1) erro(ASEM_DECLVARIGUAL);
-                inserirVar(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1, sizeVar);
+                inserirVar(tipo, taux.lexema, !ZOMBIE, GLOBAL, sizeVar);
                 while (reconhece(SN, VIRGULA)) {
                     sizeVar++; decl++;
                     novoToken();
                     if (!reconheceID()) erro(AS_FALTAID);
                     celulaTabela = consultar(tokens[tpos].lexema);
                     if (celulaTabela.tipo != -1) erro(ASEM_DECLVARIGUAL);
-                    inserirVar(tipo, tokens[tpos].lexema, !ZOMBIE, GLOBAL, tokens[tpos].linha + 1, sizeVar);
+                    inserirVar(tipo, tokens[tpos].lexema, !ZOMBIE, GLOBAL, sizeVar);
                     novoToken();
                 }
                 if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
@@ -127,7 +127,7 @@ void Prog() {
                 sizeVar++; decl++;
                 celulaTabela = consultar(taux.lexema);
                 if (celulaTabela.tipo != - 1) erro(ASEM_DECLVARIGUAL);
-                inserirVar(tipo, taux.lexema, !ZOMBIE, GLOBAL, taux.linha + 1, sizeVar);
+                inserirVar(tipo, taux.lexema, !ZOMBIE, GLOBAL, sizeVar);
                 novoToken();
             } else {
                 erro(AS_FALTAPONTOEVIRGULA);
@@ -165,7 +165,7 @@ void Funcao() {
             if (!reconheceID()) erro(AS_FALTAID);
             celulaTabela = consultar(tokens[tpos].lexema);
             if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLVARIGUAL);
-            inserirVar(tipo, tokens[tpos].lexema, 0, LOCAL, tokens[tpos].linha + 1, decl);
+            inserirVar(tipo, tokens[tpos].lexema, 0, LOCAL, decl);
             novoToken();
             decl++;
             while (1) {
@@ -174,7 +174,7 @@ void Funcao() {
                     if (!reconheceID()) erro(AS_FALTAID);
                     celulaTabela = consultar(tokens[tpos].lexema);
                     if (celulaTabela.tipo != -1 && celulaTabela.zombie != ZOMBIE) erro(ASEM_DECLVARIGUAL);
-                    inserirVar(tipo, tokens[tpos].lexema, !ZOMBIE, LOCAL, tokens[tpos].linha + 1, decl);
+                    inserirVar(tipo, tokens[tpos].lexema, !ZOMBIE, LOCAL, decl);
                     novoToken();
                     decl++;
                 } else break;
@@ -234,7 +234,7 @@ int TipoParam() {
         if (!reconheceID()) erro(AS_FALTAID);
         celulaTabela = consultarLocaisEGlobais(tokens[tpos].lexema);
         if (celulaTabela.tipo != -1) erro(ASEM_DECLVARIGUAL);
-        inserirVar(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, tokens[tpos].linha + 1, posParam);
+        inserirVar(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, posParam);
         novoToken();
         while (1) {
             if (reconhece(SN, VIRGULA)) {
@@ -253,12 +253,17 @@ int TipoParam() {
                 if (!reconheceID()) erro(AS_ERRO);
                 celulaTabela = consultar(tokens[tpos].lexema);
                 if (celulaTabela.tipo != -1) erro(ASEM_DECLVARIGUAL);
-                inserirVar(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, tokens[tpos].linha + 1, posParam);
+                inserirVar(tipo, tokens[tpos].lexema, ZOMBIE, LOCAL, posParam);
                 novoToken();
             } else {
                 retornarToken();
                 break;
             }
+        }
+        posParam++;
+        celulaTabela = consultarTipoParametro(tauxfun.lexema, posParam);
+        if (celulaTabela.tipo != -1 && strstr(celulaTabela.posicao, "L") == NULL) {
+            if (celulaTabela.escopo == GLOBAL) erro(ASEM_PARAMETROS); //Faltam parâmetros que não foram preenchidos
         }
     } else erro(AS_ERRO);
     alterarParamVar(posParam);
@@ -272,7 +277,7 @@ void TipoParamOpc() {
     } else if (Tipo()) {
         atualizaTipo();
         novoToken();
-        inserirVar(tipo, "", ZOMBIE, GLOBAL, tokens[tpos].linha + 1, -1);
+        inserirVar(tipo, "", ZOMBIE, GLOBAL, -1);
         if (reconheceID()) novoToken();
         while (1) {
             if (reconhece(SN, VIRGULA)) {
@@ -280,7 +285,7 @@ void TipoParamOpc() {
                 if (!Tipo()) erro(AS_ERRO);
                 atualizaTipo();
                 novoToken();
-                inserirVar(tipo, "", ZOMBIE, GLOBAL, tokens[tpos].linha + 1, -1);
+                inserirVar(tipo, "", ZOMBIE, GLOBAL, -1);
                 if (reconheceID()) novoToken();
             } else break;
         }
@@ -359,18 +364,21 @@ void Cmd() {
             Cmd();
             novoToken();
         }
-        //novoToken();
     } else if (reconhece(SN, PONTOEVIRGULA)) {novoToken();}
 }
 
 void Se() {
-    int result, label;
+    int result, lb;
     if (reconhece(SN, ABREPARENTESES)) {
         novoToken();
         result = Expr();
+        if (label != 0) {
+            LABEL(label);
+            label = 0;
+        }
         if (result != INTCON && result != BOOLEANO) erro(ASEM_NOTBOOLEANO);
-        label = pegarLabel();
-        GOFALSE(label);
+        lb = pegarLabel();
+        GOFALSE(lb);
         if (reconhece(SN, FECHAPARENTESE)) {
             novoToken();
             if (tokens[tpos].codigo != PONTOEVIRGULA) {
@@ -378,13 +386,13 @@ void Se() {
                 novoToken();
             }
         } else erro(AS_SE);
-        label = pegarLabel();
-        GOTO(label);
-        label = gerarLabel();
-        LABEL(label);
+        lb = pegarLabel();
+        GOTO(lb);
+        lb = gerarLabel();
+        LABEL(lb);
         Senao();
-        label = gerarLabel();
-        LABEL(label);
+        lb = gerarLabel();
+        LABEL(lb);
     } else erro(AS_SE);
 }
 
@@ -402,6 +410,10 @@ void Enquanto() {
         LABEL(gerarLabel());
         novoToken();
         result = Expr();
+        if (label != 0) {
+            LABEL(label);
+            label = 0;
+        }
         if (result != INTCON && result != BOOLEANO) erro(ASEM_NOTBOOLEANO);
         GOFALSE(gerarLabel());
         if (reconhece(SN, FECHAPARENTESE)) {
@@ -425,6 +437,10 @@ void Para() {
         if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_PARA);
         novoToken();
         result = Expr();
+        if (label != 0) {
+            LABEL(label);
+            label = 0;
+        }
         if (result != INTCON && result != BOOLEANO) erro(ASEM_NOTBOOLEANO);
         GOFALSE(gerarLabel());
         GOTO(gerarLabel());
@@ -454,6 +470,10 @@ void Retorne() {
     else if (function.tipo != SEMRETORNO && !reconhece(SN, PONTOEVIRGULA)) {
         funretorno = 1;
         result = Expr();
+        if (label != 0) {
+            LABEL(label);
+            label = 0;
+        }
         if (function.tipo != result) erro(ASEM_RETORNARFUNCAO);
         if (!reconhece(SN, PONTOEVIRGULA)) erro(AS_FALTAPONTOEVIRGULA);
 
@@ -491,91 +511,77 @@ int Atrib() {
 
 /*Gramatica de Expressões*/
 int Expr() {
-    label = 0;
-    Token pushtk;
     int result, segundoOp, operacao;
     result = ExprSimp();
     operacao = OpRel();
-    if (label != 0 && operacao == 0) LABEL(label);
-    if (operacao != 0) {
+    if (operacao) {
         novoToken();
         segundoOp = Expr();
+        //Semântico - Checar se o resultado é Booleano
         if ((result == INTCON || result == REALCON || result == CT_C || result == BOOLEANO) &&
                 (segundoOp == INTCON || segundoOp == REALCON || segundoOp == CT_C || segundoOp == BOOLEANO)) ;
         else erro(ASEM_ATRIBUICAO);
-        pushtk = tokens[tpos];
 
+        //MaqPilha - IGUAL, DIFERENTE, MAIORIGUAL, MENORIGUAL, MAIOR, MENOR
         if (result == REALCON || segundoOp == REALCON) SUBF();
         else SUB();
-        result = BOOLEANO;
         if (operacao == IGUAL) {
             GOFALSE(pegarLabel());
-            strcpy(pushtk.lexema, "0");
-            PUSH(pushtk);
+            PUSH(0);
             GOTO(pegarLabel());
             LABEL(gerarLabel());
-            strcpy(pushtk.lexema, "1");
-            PUSH(pushtk);
+            PUSH(1);
             LABEL(gerarLabel());
         } else if (operacao == DIFERENTE) {
             GOFALSE(pegarLabel());
-            strcpy(pushtk.lexema, "1");
-            PUSH(pushtk);
+            PUSH(1);
             GOTO(pegarLabel());
             LABEL(gerarLabel());
-            strcpy(pushtk.lexema, "0");
-            PUSH(pushtk);
+            PUSH(0);
             LABEL(gerarLabel());
         } else if (operacao == MAIOR) {
             GOTRUE(pegarLabel());
-            strcpy(pushtk.lexema, "0");
-            PUSH(pushtk);
+            PUSH(0);
             GOTO(pegarLabel());
             LABEL(gerarLabel());
-            strcpy(pushtk.lexema, "1");
-            PUSH(pushtk);
+            PUSH(1);
             LABEL(gerarLabel());
         } else if (operacao == MAIORIGUAL) {
             COPY();
             GOFALSE(pegarLabel());
             GOTRUE(pegarLabel());
-            strcpy(pushtk.lexema, "0");
-            PUSH(pushtk);
+            PUSH(0);
             GOTO(pegarLabel());
             LABEL(gerarLabel());
             POP();
             LABEL(gerarLabel());
-            strcpy(pushtk.lexema, "1");
-            PUSH(pushtk);
+            PUSH(1);
             LABEL(gerarLabel());
         } else if (operacao == MENOR) {
             COPY();
             GOFALSE(pegarLabel());
             GOTRUE(pegarLabel());
-            strcpy(pushtk.lexema, "1");
-            PUSH(pushtk);
+            PUSH(1);
             GOTO(pegarLabel());
             LABEL(gerarLabel());
             POP();
             LABEL(gerarLabel());
-            strcpy(pushtk.lexema, "0");
-            PUSH(pushtk);
+            PUSH(0);
             LABEL(gerarLabel());
         } else if (operacao == MENORIGUAL) {
             COPY();
             GOFALSE(pegarLabel());
             GOTRUE(pegarLabel());
             POP();
-            strcpy(pushtk.lexema, "0");
-            PUSH(pushtk);
+            PUSH(0);
             GOTO(pegarLabel());
             LABEL(gerarLabel());
             LABEL(gerarLabel());
-            strcpy(pushtk.lexema, "1");
-            PUSH(pushtk);
+            PUSH(1);
             LABEL(gerarLabel());
         }
-        if (label != 0) LABEL(label);
+
+        result = BOOLEANO;
     } else ;
     return result;
 }
@@ -601,6 +607,7 @@ int Resto(int primOp) {
     int segunOp = 0, tmpResult = 0, result;
     result = primOp;
     while (reconhece(SN, ADICAO) || reconhece(SN, SUBTRACAO) || reconhece(SN, OR)) {
+        //MaqPilha - OR, ADICAO, SUBTRACAO
         if (reconhece(SN, OR)) {
             COPY();
             if (label == 0) {
@@ -612,31 +619,34 @@ int Resto(int primOp) {
             novoToken();
             segunOp = Termo();
             salva = tokens[tpos];
-        } else if(reconhece(SN, ADICAO) ){
+        } else if(reconhece(SN, ADICAO)) {
             novoToken();
             segunOp = Termo();
-            if((primOp == REALCON && segunOp == REALCON)){
+            if ((primOp == REALCON && segunOp == REALCON)) {
                 ADDF();
-            }else{
+            } else {
                 ADD();
             }
         } else if(reconhece(SN, SUBTRACAO)){
             novoToken();
             segunOp = Termo();
-            if((primOp == REALCON && segunOp == REALCON)){
+            if ((primOp == REALCON && segunOp == REALCON)) {
                 SUBF();
-            }else{
+            } else {
                 SUB();
             }
         }
-        if (salva.codigo == OR) tmpResult = BOOLEANO;
-        else if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
-        else if (primOp == REALCON && segunOp == REALCON) tmpResult = REALCON;
-        else if (primOp == CT_C && segunOp == CT_C) tmpResult = CT_C;
-        else if ((primOp == INTCON && segunOp == CT_C) || (primOp == CT_C && segunOp == INTCON)) tmpResult = INTCON;
+
+        //Semântico - Tipos de expressões aceitos pelo Cmm
+        if (salva.codigo == OR)                             tmpResult = BOOLEANO;
+        else if (primOp == INTCON && segunOp == INTCON)     tmpResult = INTCON;
+        else if (primOp == REALCON && segunOp == REALCON)   tmpResult = REALCON;
+        else if (primOp == CT_C && segunOp == CT_C)         tmpResult = CT_C;
         else if (primOp == BOOLEANO && segunOp == BOOLEANO) tmpResult = BOOLEANO;
+        else if ((primOp == INTCON && segunOp == CT_C) || (primOp == CT_C && segunOp == INTCON))         tmpResult = INTCON;
         else if ((primOp == BOOLEANO && segunOp == INTCON )|| (primOp == INTCON && segunOp == BOOLEANO)) tmpResult = BOOLEANO;
         else erro(ASEM_ATRIBUICAO);
+
         result = Resto(tmpResult);
     }
     return result;
@@ -647,6 +657,7 @@ int Sobra(int primOp) {
     int segunOp = 0, tmpResult = 0, result;
     result = primOp;
     while (reconhece(SN, MULTIPLICACAO) || reconhece(SN, DIVISAO) || reconhece(SN, AND)) {
+        //MaqPilha - AND, MULT, DIV
         if (reconhece(SN, AND)) {
             if (label == 0) {
                 gerarLabel();
@@ -665,7 +676,6 @@ int Sobra(int primOp) {
             }else{
                 MUL();
             }
-
         } else if(reconhece(SN, DIVISAO)){
             novoToken();
             segunOp = Termo();
@@ -675,12 +685,14 @@ int Sobra(int primOp) {
                 DIV();
             }
         }
-        if (salva.codigo == OR) tmpResult = BOOLEANO;
-        else if (primOp == INTCON && segunOp == INTCON) tmpResult = INTCON;
-        else if (primOp == REALCON && segunOp == REALCON) tmpResult = REALCON;
-        else if (primOp == CT_C && segunOp == CT_C) tmpResult = CT_C;
-        else if ((primOp == INTCON && segunOp == CT_C) || (primOp == CT_C && segunOp == INTCON)) tmpResult = INTCON;
+
+        //Semântico - Tipos de expressões aceitos pelo Cmm
+        if (salva.codigo == OR)                             tmpResult = BOOLEANO;
+        else if (primOp == INTCON && segunOp == INTCON)     tmpResult = INTCON;
+        else if (primOp == REALCON && segunOp == REALCON)   tmpResult = REALCON;
+        else if (primOp == CT_C && segunOp == CT_C)         tmpResult = CT_C;
         else if (primOp == BOOLEANO && segunOp == BOOLEANO) tmpResult = BOOLEANO;
+        else if ((primOp == INTCON && segunOp == CT_C) || (primOp == CT_C && segunOp == INTCON))         tmpResult = INTCON;
         else if ((primOp == BOOLEANO && segunOp == INTCON )|| (primOp == INTCON && segunOp == BOOLEANO)) tmpResult = BOOLEANO;
         else erro(ASEM_ATRIBUICAO);
         result = Sobra(tmpResult);
@@ -693,11 +705,11 @@ int Fator() {
     CelulaTabela celulaTabela;
     int result = -1, pos = 0;
     if (tokens[tpos].categoria == INTCON ||
-        tokens[tpos].categoria == REALCON ||
-            (tokens[tpos].categoria == CT_C && !reconhece(SN, NOT))||
-        tokens[tpos].categoria == CT_L)
+             tokens[tpos].categoria == REALCON ||
+             tokens[tpos].categoria == CT_L ||
+            (tokens[tpos].categoria == CT_C && !reconhece(SN, NOT)))
     {
-        PUSH(tokens[tpos]);
+        PUSH2(tokens[tpos]);
         result = tokens[tpos].categoria;
         novoToken();
     } else if (reconheceID()) {
@@ -714,23 +726,23 @@ int Fator() {
                 pos++;
                 result = Expr();
                 celulaTabela = consultarTipoParametro(salvar.lexema, pos);
-                if (celulaTabela.tipo != result || celulaTabela.escopo != GLOBAL) erro(ASEM_PARAMETROS);
+                if (celulaTabela.tipo != result || celulaTabela.escopo != GLOBAL) erro(ASEM_PARAMETROS); //Não achou a função / parâmetro
                 while (reconhece(SN, VIRGULA)) {
                     novoToken();
                     pos++;
                     result = Expr();
                     celulaTabela = consultarTipoParametro(salvar.lexema, pos);
-                    if (celulaTabela.tipo != result || celulaTabela.escopo != GLOBAL) erro(ASEM_PARAMETROS);
+                    if (celulaTabela.tipo != result || celulaTabela.escopo != GLOBAL) erro(ASEM_PARAMETROS); //Não achou a função / parâmetro
                 }
                 pos++;
                 celulaTabela = consultarTipoParametro(salvar.lexema, pos);
                 if (celulaTabela.tipo != -1 && strstr(celulaTabela.posicao, "L") == NULL) {
-                    if (celulaTabela.escopo == GLOBAL) erro(ASEM_PARAMETROS);
+                    if (celulaTabela.escopo == GLOBAL) erro(ASEM_PARAMETROS); //Faltam parâmetros que não foram preenchidos
                 }
             } else {
                 pos++;
                 celulaTabela = consultarTipoParametro(salvar.lexema, pos);
-                if (celulaTabela.tipo != -1 && celulaTabela.escopo != GLOBAL) erro(ASEM_PARAMETROS);
+                if (celulaTabela.tipo != -1 && celulaTabela.escopo == GLOBAL) erro(ASEM_PARAMETROS);
             }
             if (!reconhece(SN, FECHAPARENTESE)) erro(AS_FALTAPARENTESE);
             celulaTabela = consultar(salvar.lexema);
@@ -751,16 +763,14 @@ int Fator() {
     } else if (reconhece(SN, NOT)) {
         novoToken();
         result = Fator();
+        //Semântico - Tipos de expressões aceitos pelo Cmm
         if (result == INTCON || result == REALCON || result == CT_C || result == BOOLEANO) result = BOOLEANO;
         else erro(ASEM_ATRIBUICAO);
-        salvar = tokens[tpos];
         GOFALSE(pegarLabel());
-        strcpy(salvar.lexema, "0");
-        PUSH(salvar);
+        PUSH(0);
         GOTO(pegarLabel());
         LABEL(gerarLabel());
-        strcpy(salvar.lexema, "1");
-        PUSH(salvar);
+        PUSH(1);
         LABEL(gerarLabel());
     } else {
         erro(AS_FALTAEXPREOUNUM);

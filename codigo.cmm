@@ -1,16 +1,16 @@
-prototipo inteiro soma(inteiro, inteiro);
+prototipo real soma(real, real);
 
 semretorno principal(semparam) {
-    inteiro b, x;
-    b = soma(1, 2);
-
-    se ((x < 1) || (x > 3) || (x > 4)) {
-
-    } senao {
-
+    real b;
+    inteiro x, i;
+    b = soma(1.2, 1.3);
+    para (i = 0; i < 2; i = 1 + 2) {
+            x = 3;
     }
+
 }
 
-inteiro soma(inteiro a, inteiro b) {
+real soma(real a, real c, real d) {
+real b;
     retorne a + b;
 }

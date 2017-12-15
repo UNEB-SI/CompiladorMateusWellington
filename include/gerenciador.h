@@ -22,8 +22,8 @@ enum Escopo {GLOBAL, LOCAL};
 CelulaTabela tabela[DIM];
 int topo;
 
-void inserirVar(int tipo, char* lexema, int zombie, int escopo, int linha, int pos);
-void inserirFuncao(int tipo, char* lexema, int zombie, int escopo, int linha, int pos);
+void inserirVar(int tipo, char* lexema, int zombie, int escopo, int pos);
+void inserirFuncao(int tipo, char* lexema, int zombie, int escopo, int pos);
 void alterarParamVar(int posParam);
 CelulaTabela consultar(char lexema[]);
 CelulaTabela consultarLocais(char lexema[]);
