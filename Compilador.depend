@@ -31,14 +31,14 @@
 1510584505 source:/home/acso/Desktop/CompiladorMateusWellington/src/erro.c
 	"../include/erro.h"
 
-1513193012 source:c:\users\wellington\documents\compiladormateuswellington\main.c
+1513360512 source:c:\users\wellington\documents\compiladormateuswellington\main.c
 	<stdio.h>
 	<stdlib.h>
 	"include/erro.h"
 	"include/analisadorlexico.h"
 	"include/analisadorsintatico.h"
 
-1513196964 c:\users\wellington\documents\compiladormateuswellington\include\erro.h
+1513360512 c:\users\wellington\documents\compiladormateuswellington\include\erro.h
 	<stdio.h>
 	<stdlib.h>
 	<stdarg.h>
@@ -50,32 +50,32 @@
 	<string.h>
 	"erro.h"
 
-1513196964 c:\users\wellington\documents\compiladormateuswellington\include\analisadorsintatico.h
+1513360512 c:\users\wellington\documents\compiladormateuswellington\include\analisadorsintatico.h
 	"analisadorlexico.h"
 	"gerenciador.h"
 	"erro.h"
 
-1513196964 c:\users\wellington\documents\compiladormateuswellington\include\gerenciador.h
+1513360512 c:\users\wellington\documents\compiladormateuswellington\include\gerenciador.h
 	"analisadorlexico.h"
 	"analisadorsintatico.h"
 
-1513196964 source:c:\users\wellington\documents\compiladormateuswellington\src\analisadorlexico.c
+1513360512 source:c:\users\wellington\documents\compiladormateuswellington\src\analisadorlexico.c
 	"../include/analisadorlexico.h"
 
-1513204362 source:c:\users\wellington\documents\compiladormateuswellington\src\analisadorsintatico.c
+1513374725 source:c:\users\wellington\documents\compiladormateuswellington\src\analisadorsintatico.c
 	"../include/analisadorsintatico.h"
 	"../include/maqpilha.h"
 
-1513203781 c:\users\wellington\documents\compiladormateuswellington\include\maqpilha.h
+1513360512 c:\users\wellington\documents\compiladormateuswellington\include\maqpilha.h
 	"analisadorlexico.h"
 	"analisadorsintatico.h"
 
-1513196964 source:c:\users\wellington\documents\compiladormateuswellington\src\erro.c
+1513360512 source:c:\users\wellington\documents\compiladormateuswellington\src\erro.c
 	"../include/erro.h"
 
-1513196964 source:c:\users\wellington\documents\compiladormateuswellington\src\gerenciador.c
+1513360512 source:c:\users\wellington\documents\compiladormateuswellington\src\gerenciador.c
 	"../include/gerenciador.h"
 
-1513203804 source:c:\users\wellington\documents\compiladormateuswellington\src\maqpilha.c
+1513360512 source:c:\users\wellington\documents\compiladormateuswellington\src\maqpilha.c
 	"../include/maqpilha.h"
 

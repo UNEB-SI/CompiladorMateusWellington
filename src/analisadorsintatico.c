@@ -187,6 +187,9 @@ void Funcao() {
     //COMANDOS
     while (1) {
         if (!reconhece(SN, FECHACHAVES)) {
+            if(!faltaToken()){
+                break;
+            }
             Cmd();
         } else break;
     }
